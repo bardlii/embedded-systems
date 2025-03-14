@@ -31,8 +31,6 @@
  unsigned char *framebuffer;
  static unsigned char font[];
  
- int cols = fb_total_cols();
- int rows = fb_total_rows();
  
  /*
   * Open the framebuffer to prepare it to be written to.  Returns 0 on success
@@ -132,6 +130,7 @@
  
  void fb_horizontal_line(int row, char ch)
  {
+   int cols = fb_total_cols();
    for (int col = 0; col < cols; col++) {
      fbputchar(ch, row, col);
    }

@@ -55,7 +55,7 @@ int main()
     exit(1);
   }
 
-  fbclear():
+  fbclear();
   int total_rows = fb_total_rows();
   int total_cols = fb_total_cols();
   int separator_row = total_rows - 3;
@@ -67,7 +67,7 @@ int main()
     fbputchar('*', 23, col);
   }
 
-  fbputs("Hello CSEE 4840 World!", 4, 10);
+  fbputs("Hello CSEE 4840 World", 4, 10);
 
   /* Open the keyboard */
   if ( (keyboard = openkeyboard(&endpoint_address)) == NULL ) {
