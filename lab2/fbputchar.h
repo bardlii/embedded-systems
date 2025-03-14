@@ -10,5 +10,9 @@
 extern int fbopen(void);
 extern void fbputchar(char, int, int);
 extern void fbputs(const char *, int, int);
+extern void fbclear(void);
+extern int fb_total_rows(void);
+extern int fb_total_cols(void);
+extern void fb_horizontal_line(int, char);
 
 #endif

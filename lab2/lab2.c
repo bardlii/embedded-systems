@@ -55,6 +55,12 @@ int main()
     exit(1);
   }
 
+  fbclear():
+  int total_rows = fb_total_rows();
+  int total_cols = fb_total_cols();
+  int separator_row = total_rows - 3;
+  fb_horizontal_line(separator_row, '-');
+
   /* Draw rows of asterisks across the top and bottom of the screen */
   for (col = 0 ; col < 64 ; col++) {
     fbputchar('*', 0, col);
@@ -116,6 +122,7 @@ int main()
   pthread_join(network_thread, NULL);
 
   return 0;
+
 }
 
 void *network_thread_f(void *ignored)
