@@ -107,7 +107,7 @@ int main()
 
   char userArrayInput[BUFFER_SIZE] = {0};
   int cursorHorizontalPosition = 0;
-  int cursorVerticalPosition = 21;
+  int cursorVerticalPosition = seperator_row + 1; /* Start below the separator line */
 
   /* Display text prompt for user */
   // fbputs("Enter text: ", cursorVerticalPosition, 0);
@@ -123,17 +123,19 @@ int main()
 	      packet.keycode[1]);
       printf("%s\n", keystate);      
       if (packet.keycode[0] == 0x29) { /* ESC pressed? */
-	break;
+	      break;
       }
 
       char *userTextInput = keystateToASCII(keystate);
-      if (userTextInput[0] != '\0') {
+      if (userTextInput[0] != '\0') { /* Ignore null character, user hasn't pressed anything. */
+
         if (userTextInput[0] == '\n') { /* Enter key pressed */
           userArrayInput[cursorHorizontalPosition] = '\0'; /* Null terminate the string */
           write(sockfd, userArrayInput, strlen(userArrayInput)); /* Send to server */
           cursorHorizontalPosition = 0; /* Reset cursor position */
           cursorVerticalPosition++; /* Move to next line */
           fbputs("Enter text: ", cursorVerticalPosition, 0); /* Display prompt again */
+          cursorHorizontalPosition = strlen("Enter text: "); /* Set cursor position after the prompt */
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           if (cursorHorizontalPosition > 0) {
             cursorHorizontalPosition--;
@@ -143,14 +145,18 @@ int main()
   
         } else if ((userTextInput[0] == '<') && ((cursorHorizontalPosition > 0))) { /* Left arrow key pressed */
             cursorHorizontalPosition--;
+
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-          if (cursorHorizontalPosition < BUFFER_SIZE - 1) {
+          if (cursorHorizontalPosition < BUFFER_SIZE - 1) { //MOVE INTO ONE CONDITIONAL FOR ONE LINE
             cursorHorizontalPosition++;
           }
+
         } else if (userTextInput[0] == '\0') { /* Ignore null character */
           continue;
+
         } else if (cursorHorizontalPosition >= BUFFER_SIZE - 1) { /* Ignore input if buffer is full */
           continue;
+
         } else {
           userArrayInput[cursorHorizontalPosition++] = userTextInput[0]; /* Add character to array */
           fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition - 1); /* Display character on screen */
@@ -182,16 +188,17 @@ void *network_thread_f(void *ignored)
     printf("%s", recvBuf);
     fbputs(recvBuf, 8, 0);
 
-    
+      /* Check for errors */
+    if (n < 0) {
+    fprintf(stderr, "Error occured while recievieing messages in the chat. Please try again later.\n");
+    exit(1);
+    }
 
-  }
-  if (n < 0) {
-    fprintf(stderr, "Error: read() failed\n");
+    if (n == 0) {
+    fprintf(stderr, "Server closed connection.\n");
     exit(1);
-  }
-  if (n == 0) {
-    fprintf(stderr, "Server closed connection\n");
-    exit(1);
+    }
+
   }
 
   return NULL;

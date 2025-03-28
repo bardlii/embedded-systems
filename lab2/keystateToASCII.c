@@ -13,7 +13,6 @@
  * The modifier is shifted 8 bits to the left and OR’d with the keycode to produce a combined value.
  * Then a switch statement on that combined value determines the resulting ASCII character.
  *
- * Compile with the preprocessor symbol TEST_KEYSTATE_TO_ASCII defined to run the test main().
  */
 
  #include <stdio.h>
@@ -31,31 +30,23 @@
      
      unsigned int mod, key, dummy;
      // Use sscanf to parse the keystate string.
-     // "%2x" reads exactly 2 hexadecimal digits.
-     // We expect to read three values: modifier, keycode, and a dummy value.
      if (sscanf(keystate, "%2x %2x %2x", &mod, &key, &dummy) != 3) {
          charArray[0] = '\0';
          charArray[1] = '\0';
          return charArray;
      }
      
-     // Combine the modifier and keycode.
      // The modifier is shifted 8 bits left so that it occupies bits 8–15,
      // while the keycode occupies bits 0–7. The bitwise OR combines them.
      unsigned int keystateHex = (mod << 8) | key;
      
-     // Use a switch statement on the combined value to determine the ASCII output.
+     // Switch statement on the combined keystateHex value to determine the ASCII output.
      switch (keystateHex) {
          // Special keys
-         case 0x0028:  // "00 28 00": Enter key
-             charArray[0] = '\n'; break;
-         case 0x002A:  // "00 2A 00": Backspace
-             charArray[0] = '\b'; break;
-         // Example mappings for arrow keys (adjust as needed)
-         case 0x0050:  // "00 50 00": Left arrow
-             charArray[0] = '<'; break;
-         case 0x004F:  // "00 4F 00": Right arrow
-             charArray[0] = '>'; break;
+         case 0x0028:  charArray[0] = '\n'; break; // "00 28 00": Enter key
+         case 0x002A:  charArray[0] = '\b'; break; // "00 2A 00": Backspace
+         case 0x0050:  charArray[0] = '<'; break; // "00 50 00": Left arrow
+         case 0x004F:  charArray[0] = '>'; break; // "00 4F 00": Right arrow
              
          // Lowercase letters (modifier = 0, keycodes 0x04 to 0x1D)
          case 0x0004:  charArray[0] = 'a'; break;
@@ -168,7 +159,7 @@
          case 0x0037:  charArray[0] = '.'; break;
          case 0x0038:  charArray[0] = '/'; break;
 
-         // Punctuation and common symbols with left shift (modifier = 0x20)
+         // Punctuation and common symbols with right shift (modifier = 0x20)
          case 0x2035:  charArray[0] = '~'; break;
          case 0x201F:  charArray[0] = '@'; break;
          case 0x2020:  charArray[0] = '#'; break;
@@ -186,56 +177,31 @@
          case 0x2031:  charArray[0] = '|'; break;
          case 0x2033:  charArray[0] = ':'; break;
 
-         // Punctuation and common symbols with right shift (modifier = 0x02)
-         case 0x2035:  charArray[0] = '~'; break;
-         case 0x201F:  charArray[0] = '@'; break;
-         case 0x2020:  charArray[0] = '#'; break;
-         case 0x2021:  charArray[0] = '$'; break;
-         case 0x2022:  charArray[0] = '%'; break;
-         case 0x2023:  charArray[0] = '^'; break;
-         case 0x2024:  charArray[0] = '&'; break;
-         case 0x2025:  charArray[0] = '*'; break;
-         case 0x2026:  charArray[0] = '('; break;
-         case 0x2027:  charArray[0] = ')'; break;
-         case 0x202D:  charArray[0] = '_'; break;
-         case 0x202E:  charArray[0] = '+'; break;
-         case 0x202F:  charArray[0] = '{'; break;
-         case 0x2030:  charArray[0] = '}'; break;
-         case 0x2031:  charArray[0] = '|'; break;
-         case 0x2033:  charArray[0] = ':'; break;
+         // Punctuation and common symbols with left shift (modifier = 0x02)
+         case 0x0235:  charArray[0] = '~'; break;
+         case 0x021F:  charArray[0] = '@'; break;
+         case 0x0220:  charArray[0] = '#'; break;
+         case 0x0221:  charArray[0] = '$'; break;
+         case 0x0222:  charArray[0] = '%'; break;
+         case 0x0223:  charArray[0] = '^'; break;
+         case 0x0224:  charArray[0] = '&'; break;
+         case 0x0225:  charArray[0] = '*'; break;
+         case 0x0226:  charArray[0] = '('; break;
+         case 0x0227:  charArray[0] = ')'; break;
+         case 0x022D:  charArray[0] = '_'; break;
+         case 0x022E:  charArray[0] = '+'; break;
+         case 0x022F:  charArray[0] = '{'; break;
+         case 0x0230:  charArray[0] = '}'; break;
+         case 0x0231:  charArray[0] = '|'; break;
+         case 0x0233:  charArray[0] = ':'; break;
 
          default:
-             // If the key state is not recognized, return an empty string.
+             // If the keystate is unrecognized, return an empty string.
              charArray[0] = '\0'; break;
      }
      
-     charArray[1] = '\0';  // Null terminator for proper C-string.
+     charArray[1] = '\0';  // Null terminator string.
      return charArray;
  }
  
- 
- #ifdef TEST_KEYSTATE_TO_ASCII
- // A simple main function to test keystateToASCII.
- int main() {
-     // Test cases:
-     const char* testCases[] = {
-         "00 28 00", // Enter key -> '\n'
-         "00 2A 00", // Backspace -> '\b'
-         "00 04 00", // 'a'
-         "02 04 00", // 'A'
-         "00 1E 00", // '1'
-         "00 2C 00", // space
-         "00 2D 00", // '-'
-         "00 2E 00", // '='
-         NULL
-     };
-     
-     for (int i = 0; testCases[i] != NULL; i++) {
-         char* ascii = keystateToASCII(testCases[i]);
-         printf("Keystate: %s -> ASCII: %s\n", testCases[i], ascii);
-         free(ascii);
-     }
-     return 0;
- }
- #endif
  
