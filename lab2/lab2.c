@@ -75,7 +75,7 @@ int main()
 
   /* Clear the screen and draw a horizontal line across the bottom */
   /* of the screen.  The line is drawn with the '-' character. */
-  // fbclear();
+  fbclear();
 
   /* Determine the total number of rows and columns that can fit on the screen */
   total_rows = fb_total_rows();
