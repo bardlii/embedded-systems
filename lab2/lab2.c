@@ -212,6 +212,7 @@ int main()
 void add_message(const char *message) {
   pthread_mutex_lock(&message_mutex);
   
+  fbputs("Here!", 0, 0);
   /* Shift messages up to make room */
   if (message_count == MAX_MESSAGES) {
     for (int i = 0; i < message_count; i++) {
