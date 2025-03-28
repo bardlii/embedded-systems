@@ -2,7 +2,7 @@
  *
  * CSEE 4840 Lab 2 for 2019
  *
- * Name/UNI: Please Changeto Yourname (pcy2301)
+ * Name/UNI: Bradley Jocelyn (bcj2124) & Aymen Norain (aan2161)
  */
 #include "fbputchar.h"
 #include <stdio.h>
@@ -55,9 +55,15 @@ int main()
     exit(1);
   }
 
+  //* Clear the screen and draw a horizontal line across the bottom */
+  /* of the screen.  The line is drawn with the '-' character. */
   fbclear();
+
+  // * Determine the total number of rows and columns that can fit on the screen */
   int total_rows = fb_total_rows();
   int total_cols = fb_total_cols();
+
+  /* Draw a horizontal line across the bottom of the screen to seperate inbound/outbound chats*/
   int separator_row = total_rows - 3;
   fb_horizontal_line(separator_row, '-');
 
@@ -99,19 +105,59 @@ int main()
   /* Start the network thread */
   pthread_create(&network_thread, NULL, network_thread_f, NULL);
 
+  char userArrayInput[BUFFER_SIZE] = {0};
+  int cursorHorizontalPosition = 0;
+  int cursorVerticalPosition = 21;
+
+  /* Display text prompt for user */
+  // fbputs("Enter text: ", cursorVerticalPosition, 0);
+  
   /* Look for and handle keypresses */
   for (;;) {
+    /* Read the keyboard input */
     libusb_interrupt_transfer(keyboard, endpoint_address,
 			      (unsigned char *) &packet, sizeof(packet),
 			      &transferred, 0);
     if (transferred == sizeof(packet)) {
       sprintf(keystate, "%02x %02x %02x", packet.modifiers, packet.keycode[0],
 	      packet.keycode[1]);
-      printf("%s\n", keystate);
-      fbputs(keystate, 6, 0);
+      printf("%s\n", keystate);      
       if (packet.keycode[0] == 0x29) { /* ESC pressed? */
 	break;
       }
+
+      char *userTextInput = keystateToASCII(keystate);
+      if (userTextInput[0] != '\0') {
+        if (userTextInput[0] == '\n') { /* Enter key pressed */
+          userArrayInput[cursorHorizontalPosition] = '\0'; /* Null terminate the string */
+          write(sockfd, userArrayInput, strlen(userArrayInput)); /* Send to server */
+          cursorHorizontalPosition = 0; /* Reset cursor position */
+          cursorVerticalPosition++; /* Move to next line */
+          fbputs("Enter text: ", cursorVerticalPosition, 0); /* Display prompt again */
+        } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
+          if (cursorHorizontalPosition > 0) {
+            cursorHorizontalPosition--;
+            userArrayInput[cursorHorizontalPosition] = '\0'; /* Null terminate the string */
+            fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
+          }
+  
+        } else if ((userTextInput[0] == '<') && ((cursorHorizontalPosition > 0))) { /* Left arrow key pressed */
+            cursorHorizontalPosition--;
+        } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
+          if (cursorHorizontalPosition < BUFFER_SIZE - 1) {
+            cursorHorizontalPosition++;
+          }
+        } else if (userTextInput[0] == '\0') { /* Ignore null character */
+          continue;
+        } else if (cursorHorizontalPosition >= BUFFER_SIZE - 1) { /* Ignore input if buffer is full */
+          continue;
+        } else {
+          userArrayInput[cursorHorizontalPosition++] = userTextInput[0]; /* Add character to array */
+          fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition - 1); /* Display character on screen */
+        }
+      }
+  
+
     }
   }
 
@@ -129,11 +175,23 @@ void *network_thread_f(void *ignored)
 {
   char recvBuf[BUFFER_SIZE];
   int n;
+  int messageVerticalIncrement = 1;
   /* Receive data */
   while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
     recvBuf[n] = '\0';
     printf("%s", recvBuf);
     fbputs(recvBuf, 8, 0);
+
+    
+
+  }
+  if (n < 0) {
+    fprintf(stderr, "Error: read() failed\n");
+    exit(1);
+  }
+  if (n == 0) {
+    fprintf(stderr, "Server closed connection\n");
+    exit(1);
   }
 
   return NULL;

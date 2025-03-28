@@ -113,21 +113,31 @@
    while ((c = *s++) != 0) fbputchar(c, row, col++);
  }
  
+ /* Clear the screen by filling it with black. */
  void fbclear(void)
  {
    memset(framebuffer, 0, fb_finfo.smem_len);
  }
  
+ /* Calculate the total number of rows that can fit on screen
+  * given the font size and resolution.
+ */
  int fb_total_rows(void)
  {
    return fb_vinfo.yres / (FONT_HEIGHT * 2);
  }
  
+ /* Calculate the total number of columns that can fit on screen
+  * given the font size and resolution.
+ */
  int fb_total_cols(void)
  {
    return fb_vinfo.xres / (FONT_WIDTH * 2);
  }
  
+ /* Draw a horizontal line across the screen at the given row.
+  * The line is drawn with the given character.
+  */
  void fb_horizontal_line(int row, char ch)
  {
    int cols = fb_total_cols();
@@ -138,9 +148,7 @@
  
  
  /* 8 X 16 console font from /lib/kbd/consolefonts/lat0-16.psfu.gz
- 
  od --address-radix=n --width=16 -v -t x1 -j 4 -N 2048 lat0-16.psfu
- 
  */
  
  static unsigned char font[] = {
