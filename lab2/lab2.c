@@ -244,7 +244,7 @@ void display_messages(void) {
 
 void clear_display(void) {
   for (int row = 0; row < separator_row; row++) {
-    fbputchar("#", row, 0);
+    fbputchar('#', row, 0);
     // for (int col = 0; col < total_cols; col++) {
     //   fbputchar('#', row, col);
     // }
