@@ -243,10 +243,9 @@ void display_messages(void) {
 }
 
 void clear_display(void) {
-  fbputs("hit clear display", 0, 0);
   for (int row = 0; row < separator_row; row++) {
     for (int col = 0; col < total_cols; col++) {
-      fbputchar(' ', row, col);
+      fbputchar('#', row, col);
     }
   }
 }
