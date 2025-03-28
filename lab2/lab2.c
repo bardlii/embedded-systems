@@ -150,16 +150,9 @@ int main()
       if (userTextInput[0] != '\0') { /* Ignore null character, user hasn't pressed anything. */
 
         if (userTextInput[0] == '\n') { /* Enter key pressed */
-          
-          // userArrayInput[cursorHorizontalPosition] = '\0'; /* Null terminate the string */
-          // write(sockfd, userArrayInput, strlen(userArrayInput)); /* Send to server */
-          // cursorHorizontalPosition = 0; /* Reset cursor position */
-          // cursorVerticalPosition++; /* Move to next line */
-          // fbputs("Enter text: ", cursorVerticalPosition, 0); /* Display prompt again */
-          // cursorHorizontalPosition = strlen("Enter text: "); /* Set cursor position after the prompt */
-
           /* Send message to server and input it into buffer*/
           write(sockfd, userArrayInput, strlen(userArrayInput));
+          fbputs("add_message hit!", 0, 0);
           add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
           
           /* Reset cursor position */
