@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include "usbkeyboard.h"
 #include <pthread.h>
+#include "keystateToASCII.h"
 
 /* Update SERVER_HOST to be the IP address of
  * the chat server you are connecting to
@@ -126,7 +127,7 @@ int main()
 
   char userArrayInput[BUFFER_SIZE] = {0};
   int cursorHorizontalPosition = 0;
-  int cursorVerticalPosition = seperator_row + 1; /* Start below the separator line */
+  int cursorVerticalPosition = separator_row + 1; /* Start below the separator line */
 
   /* Display text prompt for user */
   // fbputs("Enter text: ", cursorVerticalPosition, 0);
