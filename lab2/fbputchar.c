@@ -31,7 +31,6 @@
  unsigned char *framebuffer;
  static unsigned char font[];
  
- 
  /*
   * Open the framebuffer to prepare it to be written to.  Returns 0 on success
   * or one of the FBOPEN_... return codes if something went wrong.
@@ -105,12 +104,17 @@
  
  /*
   * Draw the given string at the given row/column.
-  * String must fit on a single line: wrap-around is not handled.
   */
  void fbputs(const char *s, int row, int col)
  {
    char c;
-   while ((c = *s++) != 0) fbputchar(c, row, col++);
+   while ((c = *s++) != 0) {
+    fbputchar(c, row, col++);
+    if (col > fb_total_cols()) {
+      row++;
+      col = 0;
+    }
+   }
  }
  
  /* Clear the screen by filling it with black. */
@@ -140,8 +144,7 @@
   */
  void fb_horizontal_line(int row, char ch)
  {
-   int cols = fb_total_cols();
-   for (int col = 0; col < cols; col++) {
+   for (int col = 0; col < fb_total_cols(); col++) {
      fbputchar(ch, row, col);
    }
  }

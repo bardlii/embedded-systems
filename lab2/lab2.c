@@ -22,6 +22,8 @@
 #define SERVER_PORT 42000
 
 #define BUFFER_SIZE 128
+#define MAX_MESSAGE_LENGTH 64 /* Maximum length of a message line */
+#define MAX_MESSAGES 20 /* Maximum number of messages to store */
 
 /*
  * References:
@@ -40,6 +42,21 @@ uint8_t endpoint_address;
 pthread_t network_thread;
 void *network_thread_f(void *);
 
+/* Useful global variables */
+int separator_row; /* Row where line is drawn */
+int display_area_rows; /* Number of rows available for messages */
+int total_rows, total_cols;
+
+/* Message buffer */
+char message_buffer[MAX_MESSAGES][MAX_MESSAGE_LENGTH];
+int message_count = 0;
+pthread_mutex_t message_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+/* Function prototypes */
+void add_message(const char *message);
+void display_messages();
+void clear_display();
+
 int main()
 {
   int err, col;
@@ -49,6 +66,10 @@ int main()
   struct usb_keyboard_packet packet;
   int transferred;
   char keystate[12];
+
+  /* Input buffer */
+  char input_buffer[MAX_MESSAGE_LENGTH] = "";
+  int input_length = 0;
 
   if ((err = fbopen()) != 0) {
     fprintf(stderr, "Error: Could not open framebuffer: %d\n", err);
@@ -60,12 +81,14 @@ int main()
   fbclear();
 
   // * Determine the total number of rows and columns that can fit on the screen */
-  int total_rows = fb_total_rows();
-  int total_cols = fb_total_cols();
+  total_rows = fb_total_rows();
+  total_cols = fb_total_cols();
 
   /* Draw a horizontal line across the bottom of the screen to seperate inbound/outbound chats*/
   int separator_row = total_rows - 3;
   fb_horizontal_line(separator_row, '-');
+
+  display_area_rows = separator_row - 1;
 
   /* Draw rows of asterisks across the top and bottom of the screen */
   for (col = 0 ; col < 64 ; col++) {
@@ -175,6 +198,49 @@ int main()
 
   return 0;
 
+}
+
+void add_message(const char *message) {
+  pthread_mutex_lock(&message_mutex);
+  
+  /* Shift messages up to make room */
+  if (message_count == MAX_MESSAGES) {
+    for (int i = 0; i < message_count; i++) {
+      strcpy(message_buffer[i], message_buffer[i + 1]);
+    }
+    message_count--;
+  }
+
+  /* Add new message to buffer */
+  strncpy(message_buffer[message_count], message, MAX_MESSAGE_LENGTH - 1);
+  message_buffer[message_count][MAX_MESSAGE_LENGTH - 1] = '\0';
+  message_count++;
+
+  display_messages();
+
+  pthread_mutex_unlock(&message_mutex);
+}
+
+void display_messages(void) {
+  clear_display();
+
+  /* Calculate how many messages we can display */
+  int displayable = message_count < display_area_rows ? message_count : display_area_rows;
+
+  for (int i = 0; i < displayable; i++) {
+    int msg_index = message_count - displayable + i;
+    int row = separater_row - displayable + i;
+
+    fbputs(message_buffer[msg_index], row, 0);
+  }
+}
+
+void clear_display(void) {
+  for (int row = 0; row < separator_row; row++) {
+    for (int col = 0; col < total_cols; col++) {
+      fbputchar(' ', row, col);
+    }
+  }
 }
 
 void *network_thread_f(void *ignored)
