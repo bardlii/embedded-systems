@@ -45,7 +45,7 @@ void *network_thread_f(void *);
 /* Useful global variables */
 int separator_row; /* Row where line is drawn */
 int display_area_rows; /* Number of rows available for messages */
-int total_rows, total_cols;
+int total_rows, total_cols; /* Total rows and columns on screen */
 
 /* Message buffer */
 char message_buffer[MAX_MESSAGES][MAX_MESSAGE_LENGTH];
@@ -168,6 +168,7 @@ int main()
           /* Display prompt and set cursor after*/
           fbputs("Enter text: ", cursorVerticalPosition, 0); 
           cursorHorizontalPosition = strlen("Enter text: ");
+          fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           if (cursorHorizontalPosition > 0) {
@@ -272,5 +273,29 @@ void *network_thread_f(void *ignored)
   }
 
   return NULL;
+
+  /*
+void draw_cursor(int row, int col) {
+    unsigned char *pixel = framebuffer +
+        (row * FONT_HEIGHT * 2 + fb_vinfo.yoffset) * fb_finfo.line_length +
+        (col * FONT_WIDTH * 2 + fb_vinfo.xoffset) * BITS_PER_PIXEL / 8;
+
+    for (int y = 0; y < FONT_HEIGHT * 2; y++) {
+        for (int x = 0; x < FONT_WIDTH * 2; x++) {
+            pixel[0] = 255; // Red
+            pixel[1] = 255; // Green
+            pixel[2] = 255; // Blue
+            pixel[3] = 0;   // Alpha
+            pixel += 4;     // Move to the next pixel
+        }
+        pixel += fb_finfo.line_length - (FONT_WIDTH * 2 * 4); // Move to the next row
+    }
+}
+
+void erase_cursor(int row, int col, char c) {
+    fbputchar(c, row, col); // Redraw the character at the cursor position
+}
+    */
+
 }
 
