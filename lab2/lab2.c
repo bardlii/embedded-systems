@@ -67,10 +67,6 @@ int main()
   int transferred;
   char keystate[12];
 
-  /* Input buffer */
-  char input_buffer[MAX_MESSAGE_LENGTH] = "";
-  int input_length = 0;
-
   if ((err = fbopen()) != 0) {
     fprintf(stderr, "Error: Could not open framebuffer: %d\n", err);
     exit(1);
@@ -153,12 +149,26 @@ int main()
       if (userTextInput[0] != '\0') { /* Ignore null character, user hasn't pressed anything. */
 
         if (userTextInput[0] == '\n') { /* Enter key pressed */
-          userArrayInput[cursorHorizontalPosition] = '\0'; /* Null terminate the string */
-          write(sockfd, userArrayInput, strlen(userArrayInput)); /* Send to server */
-          cursorHorizontalPosition = 0; /* Reset cursor position */
-          cursorVerticalPosition++; /* Move to next line */
-          fbputs("Enter text: ", cursorVerticalPosition, 0); /* Display prompt again */
-          cursorHorizontalPosition = strlen("Enter text: "); /* Set cursor position after the prompt */
+          
+          // userArrayInput[cursorHorizontalPosition] = '\0'; /* Null terminate the string */
+          // write(sockfd, userArrayInput, strlen(userArrayInput)); /* Send to server */
+          // cursorHorizontalPosition = 0; /* Reset cursor position */
+          // cursorVerticalPosition++; /* Move to next line */
+          // fbputs("Enter text: ", cursorVerticalPosition, 0); /* Display prompt again */
+          // cursorHorizontalPosition = strlen("Enter text: "); /* Set cursor position after the prompt */
+
+          /* Send message to server and input it into buffer*/
+          write(sockfd, userArrayInput, strlen(userArrayInput));
+          add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
+          
+          /* Reset cursor position */
+          cursorHorizontalPosition = 0;
+          cursorVerticalPosition = separator_row + 1;
+          
+          /* Display prompt and set cursor after*/
+          fbputs("Enter text: ", cursorVerticalPosition, 0); 
+          cursorHorizontalPosition = strlen("Enter text: ");
+
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           if (cursorHorizontalPosition > 0) {
             cursorHorizontalPosition--;
@@ -229,7 +239,7 @@ void display_messages(void) {
 
   for (int i = 0; i < displayable; i++) {
     int msg_index = message_count - displayable + i;
-    int row = separater_row - displayable + i;
+    int row = separator_row - displayable + i;
 
     fbputs(message_buffer[msg_index], row, 0);
   }
@@ -247,24 +257,18 @@ void *network_thread_f(void *ignored)
 {
   char recvBuf[BUFFER_SIZE];
   int n;
-  int messageVerticalIncrement = 1;
+
   /* Receive data */
   while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
     recvBuf[n] = '\0';
     printf("%s", recvBuf);
-    fbputs(recvBuf, 8, 0);
+    
+    /* Add prefix for received messages */
+    char display_msg[MAX_MESSAGE_LENGTH];
+    snprintf(display_msg, MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
 
-      /* Check for errors */
-    if (n < 0) {
-    fprintf(stderr, "Error occured while recievieing messages in the chat. Please try again later.\n");
-    exit(1);
-    }
-
-    if (n == 0) {
-    fprintf(stderr, "Server closed connection.\n");
-    exit(1);
-    }
-
+    /* Display message*/
+    add_message(display_msg);
   }
 
   return NULL;
