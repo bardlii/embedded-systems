@@ -73,11 +73,11 @@ int main()
     exit(1);
   }
 
-  //* Clear the screen and draw a horizontal line across the bottom */
+  /* Clear the screen and draw a horizontal line across the bottom */
   /* of the screen.  The line is drawn with the '-' character. */
-  fbclear();
+  // fbclear();
 
-  // * Determine the total number of rows and columns that can fit on the screen */
+  /* Determine the total number of rows and columns that can fit on the screen */
   total_rows = fb_total_rows();
   total_cols = fb_total_cols();
 
@@ -88,12 +88,12 @@ int main()
   display_area_rows = separator_row - 1;
 
   /* Draw rows of asterisks across the top and bottom of the screen */
-  for (col = 0 ; col < 64 ; col++) {
-    fbputchar('*', 0, col);
-    fbputchar('*', 23, col);
-  }
+  // for (col = 0 ; col < 64 ; col++) {
+  //   fbputchar('*', 0, col);
+  //   fbputchar('*', 23, col);
+  // }
 
-  fbputs("Hello CSEE 4840 World", 4, 10);
+  // fbputs("Hello CSEE 4840 World", 4, 10);
 
   /* Open the keyboard */
   if ( (keyboard = openkeyboard(&endpoint_address)) == NULL ) {
@@ -152,7 +152,7 @@ int main()
         if (userTextInput[0] == '\n') { /* Enter key pressed */
           /* Send message to server and input it into buffer*/
           write(sockfd, userArrayInput, strlen(userArrayInput));
-          // add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
+          add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
           
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
