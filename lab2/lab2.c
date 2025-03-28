@@ -164,7 +164,8 @@ int main()
 
           /* Clear the input buffer */
           memset(userArrayInput, 0, sizeof(userArrayInput));
-          fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
+          // fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
+          clear_input();
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           if (cursorHorizontalPosition > 0) {
@@ -250,6 +251,13 @@ void clear_display(void) {
     // for (int col = 0; col < total_cols; col++) {
     //   fbputchar('#', row, col);
     // }
+  }
+}
+
+void clear_input(void) {
+  for (int col = 0; col < total_cols; col++) {
+    fbputchar(' ', separator_row + 1, col);
+    fbputchar(' ', separator_row + 2, col);
   }
 }
 
