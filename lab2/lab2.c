@@ -221,7 +221,6 @@ void add_message(const char *message) {
   /* Add new message to buffer */
   strncpy(message_buffer[message_count], message, MAX_MESSAGE_LENGTH - 1);
   message_buffer[message_count][MAX_MESSAGE_LENGTH - 1] = '\0';
-  fbputs(message_buffer[message_count], 0, 0);
   message_count++;
 
   display_messages();
@@ -244,6 +243,7 @@ void display_messages(void) {
 }
 
 void clear_display(void) {
+  fbputs("hit clear display", 0, 0);
   for (int row = 0; row < separator_row; row++) {
     for (int col = 0; col < total_cols; col++) {
       fbputchar(' ', row, col);
