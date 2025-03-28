@@ -152,7 +152,7 @@ int main()
         if (userTextInput[0] == '\n') { /* Enter key pressed */
           /* Send message to server and input it into buffer*/
           write(sockfd, userArrayInput, strlen(userArrayInput));
-          add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
+          // add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
           
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
