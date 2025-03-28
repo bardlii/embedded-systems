@@ -131,7 +131,6 @@
          case 0x201B:  charArray[0] = 'X'; break;
          case 0x201C:  charArray[0] = 'Y'; break;
          case 0x201D:  charArray[0] = 'Z'; break;
-
     
          // Digits (keycodes 0x1E to 0x27 with no shift)
          case 0x001E:  charArray[0] = '1'; break;
