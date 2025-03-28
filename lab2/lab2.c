@@ -82,16 +82,16 @@ int main()
   total_cols = fb_total_cols();
 
   /* Draw a horizontal line across the bottom of the screen to seperate inbound/outbound chats*/
-  int separator_row = total_rows - 3;
+  int separator_row = total_rows - 4;
   fb_horizontal_line(separator_row, '-');
 
   display_area_rows = separator_row - 1;
 
   /* Draw rows of asterisks across the top and bottom of the screen */
-  // for (col = 0 ; col < 64 ; col++) {
-  //   fbputchar('*', 0, col);
-  //   fbputchar('*', 23, col);
-  // }
+  for (col = 0 ; col < 64 ; col++) {
+    fbputchar('*', 0, col);
+    fbputchar('*', 23, col);
+  }
 
   // fbputs("Hello CSEE 4840 World", 4, 10);
 
@@ -244,9 +244,10 @@ void display_messages(void) {
 
 void clear_display(void) {
   for (int row = 0; row < separator_row; row++) {
-    for (int col = 0; col < total_cols; col++) {
-      fbputchar('#', row, col);
-    }
+    fbputchar("#", row, 0);
+    // for (int col = 0; col < total_cols; col++) {
+    //   fbputchar('#', row, col);
+    // }
   }
 }
 
