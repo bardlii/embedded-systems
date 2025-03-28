@@ -1,10 +1,11 @@
 CFLAGS = -Wall
 
-OBJECTS = lab2.o fbputchar.o usbkeyboard.o
+OBJECTS = lab2.o fbputchar.o usbkeyboard.o keystateToASCII.o
 
 TARFILES = Makefile lab2.c \
 	fbputchar.h fbputchar.c \
-	usbkeyboard.h usbkeyboard.c
+	usbkeyboard.h usbkeyboard.c \
+	keystateToASCII.h keystateToASCII.c
 
 lab2 : $(OBJECTS)
 	cc $(CFLAGS) -o lab2 $(OBJECTS) -lusb-1.0 -pthread
@@ -19,6 +20,7 @@ lab2.tar.gz : $(TARFILES)
 lab2.o : lab2.c fbputchar.h usbkeyboard.h
 fbputchar.o : fbputchar.c fbputchar.h
 usbkeyboard.o : usbkeyboard.c usbkeyboard.h
+keystateToASCII.o : keystateToASCII.c keystateToASCII.h
 
 .PHONY : clean
 clean :
