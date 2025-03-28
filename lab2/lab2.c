@@ -169,6 +169,9 @@ int main()
           /* Display prompt and set cursor after*/
           fbputs("Enter text: ", cursorVerticalPosition, 0); 
           cursorHorizontalPosition = strlen("Enter text: ");
+
+          /* Clear the input buffer */
+          memset(userArrayInput, 0, sizeof(userArrayInput));
           fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
