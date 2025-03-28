@@ -57,6 +57,7 @@ pthread_mutex_t message_mutex = PTHREAD_MUTEX_INITIALIZER;
 void add_message(const char *message);
 void display_messages();
 void clear_display();
+void clear_input();
 
 int main()
 {
@@ -153,7 +154,7 @@ int main()
           /* Send message to server and input it into buffer*/
           write(sockfd, userArrayInput, strlen(userArrayInput));
           // add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
-          fputs("Here!", 0, 0);
+          fbputs("Here!", 0, 0);
           
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
