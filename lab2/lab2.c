@@ -55,7 +55,7 @@ pthread_mutex_t message_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* Function prototypes */
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]);
-void display_messages();
+// void display_messages();
 void clear_display();
 void clear_input();
 
@@ -203,6 +203,12 @@ int main()
           continue;
 
         } else {
+          /* Calculate position in user input array */
+          int inputPos = cursorHorizontalPosition - strlen("Enter text: ");
+          
+          /* Add character to array */
+          userArrayInput[0][inputPos] = userTextInput[0];
+          
           /* Display character on screen */
           fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
           cursorHorizontalPosition++;
@@ -248,19 +254,19 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_unlock(&message_mutex);
 }
 
-void display_messages(void) {
-  clear_display();
+// void display_messages(void) {
+//   clear_display();
 
-  /* Calculate how many messages we can display */
-  int displayable = message_count < display_area_rows ? message_count : display_area_rows;
+//   /* Calculate how many messages we can display */
+//   int displayable = message_count < display_area_rows ? message_count : display_area_rows;
 
-  for (int i = 0; i < displayable; i++) {
-    int msg_index = message_count - displayable + i;
-    int row = separator_row - displayable + i;
+//   for (int i = 0; i < displayable; i++) {
+//     int msg_index = message_count - displayable + i;
+//     int row = separator_row - displayable + i;
 
-    fbputs(message_buffer[msg_index], row, 0);
-  }
-}
+//     fbputs(message_buffer[msg_index], row, 0);
+//   }
+// }
 
 void clear_display(void) {
   for (int row = 1; row < separator_row; row++) {
