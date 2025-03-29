@@ -229,28 +229,60 @@ int main()
 
 }
 
+// void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
+//   pthread_mutex_lock(&message_mutex);
+  
+//   /* Shift messages up to make room */
+//   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
+//     strcpy(message_buffer[i], message_buffer[i + 2]);
+//   }
+  
+//   // Clear the last two rows before inserting new messages
+//   memset(message_buffer[MAX_MESSAGES - 1], ' ', MAX_MESSAGE_LENGTH);
+//   memset(message_buffer[MAX_MESSAGES - 2], ' ', MAX_MESSAGE_LENGTH);
+  
+//   /* Add new message to buffer */
+//   strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
+//   message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
+//   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
+//   message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
+
+//   fbputs(message_buffer[separator_row - 1], separator_row - 1, 0);
+//   fbputs(message_buffer[separator_row - 2], separator_row - 2, 0);
+//   // display_messages();
+
+//   pthread_mutex_unlock(&message_mutex);
+// }
+
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_lock(&message_mutex);
   
-  /* Shift messages up to make room */
+  /* Shift all messages up by two positions to make room for new message */
   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
     strcpy(message_buffer[i], message_buffer[i + 2]);
   }
   
-  // Clear the last two rows before inserting new messages
-  memset(message_buffer[MAX_MESSAGES - 1], ' ', MAX_MESSAGE_LENGTH);
-  memset(message_buffer[MAX_MESSAGES - 2], ' ', MAX_MESSAGE_LENGTH);
-  
-  /* Add new message to buffer */
-  strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
-  message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
+  /* Add new message to buffer (two lines) */
   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
   message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
-
-  fbputs(message_buffer[separator_row - 1], separator_row - 1, 0);
-  fbputs(message_buffer[separator_row - 2], separator_row - 2, 0);
-  // display_messages();
-
+  
+  strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
+  message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
+  
+  /* Clear the display area */
+  clear_display();
+  
+  /* Display all messages in the buffer */
+  for (int i = 0; i < MAX_MESSAGES; i++) {
+    /* Calculate row position (from top to bottom) */
+    int row = i + 1; /* +1 to skip the top border row */
+    
+    /* Only display if row is above the separator */
+    if (row < separator_row) {
+      fbputs(message_buffer[i], row, 0);
+    }
+  }
+  
   pthread_mutex_unlock(&message_mutex);
 }
 
