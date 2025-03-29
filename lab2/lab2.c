@@ -131,7 +131,8 @@ int main()
   int cursorVerticalPosition = separator_row + 1; /* Start below the separator line */
 
   /* Display text prompt for user */
-  // fbputs("Enter text: ", cursorVerticalPosition, 0);
+  fbputs("Enter text: ", cursorVerticalPosition, 0);
+  cursorHorizontalPosition = strlen("Enter text: ");
   
   /* Look for and handle keypresses */
   for (;;) {
@@ -153,11 +154,18 @@ int main()
         if (userTextInput[0] == '\n') { /* Enter key pressed */
           /* Send message to server and input it into buffer*/
           write(sockfd, userArrayInput, strlen(userArrayInput));
-          // add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
+          
+          /* Add to our display with "You: " prefix */
+          char display_msg[MAX_MESSAGE_LENGTH];
+          snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput);
+          add_message(display_msg);
           
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
           cursorVerticalPosition = separator_row + 1;
+
+          /* Clear input area */
+          clear_input();
           
           /* Display prompt and set cursor after*/
           fbputs("Enter text: ", cursorVerticalPosition, 0); 
@@ -165,21 +173,19 @@ int main()
 
           /* Clear the input buffer */
           memset(userArrayInput, 0, sizeof(userArrayInput));
-          // fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
-          clear_input();
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
-          if (cursorHorizontalPosition > 0) {
+          if (cursorHorizontalPosition > strlen("Enter text: ")) {
             cursorHorizontalPosition--;
-            userArrayInput[cursorHorizontalPosition] = '\0'; /* Null terminate the string */
+            userArrayInput[cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
             fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
           }
   
-        } else if ((userTextInput[0] == '<') && ((cursorHorizontalPosition > 0))) { /* Left arrow key pressed */
+        } else if ((userTextInput[0] == '<') && (cursorHorizontalPosition > strlen("Enter text: "))) { /* Left arrow key pressed */
             cursorHorizontalPosition--;
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-          if (cursorHorizontalPosition < BUFFER_SIZE - 1) { //MOVE INTO ONE CONDITIONAL FOR ONE LINE
+          if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput)) { //MOVE INTO ONE CONDITIONAL FOR ONE LINE
             cursorHorizontalPosition++;
           }
 
@@ -190,8 +196,15 @@ int main()
           continue;
 
         } else {
-          userArrayInput[cursorHorizontalPosition++] = userTextInput[0]; /* Add character to array */
-          fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition - 1); /* Display character on screen */
+          /* Calculate position in user input array */
+          int inputPos = cursorHorizontalPosition - strlen("Enter text: ");
+          
+          /* Make sure we're within bounds of the array */
+          if (inputPos >= 0 && inputPos < BUFFER_SIZE - 1) {
+            userArrayInput[inputPos] = userTextInput[0]; /* Add character to array */
+            fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition); /* Display character on screen */
+            cursorHorizontalPosition++;
+          }
         }
       }
   
@@ -246,11 +259,10 @@ void display_messages(void) {
 }
 
 void clear_display(void) {
-  for (int row = 0; row < separator_row; row++) {
-    fbputchar('#', row, 0);
-    // for (int col = 0; col < total_cols; col++) {
-    //   fbputchar('#', row, col);
-    // }
+  for (int row = 1; row < separator_row; row++) {
+    for (int col = 0; col < total_cols; col++) {
+      fbputchar(' ', row, col);
+    }
   }
 }
 
