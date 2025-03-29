@@ -225,6 +225,7 @@ void add_message(const char *message) {
   message_buffer[message_count][MAX_MESSAGE_LENGTH - 1] = '\0';
   message_count++;
 
+  fbputs(message_buffer[message_count - 1], 1, 0);
   display_messages();
 
   pthread_mutex_unlock(&message_mutex);
