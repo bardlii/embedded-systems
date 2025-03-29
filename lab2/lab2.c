@@ -256,7 +256,7 @@ int main()
 
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_lock(&message_mutex);
-  
+  fbputs("Hello???", 0, 0);
   /* Shift all messages up by two positions to make room for new message */
   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
     strcpy(message_buffer[i], message_buffer[i + 2]);
