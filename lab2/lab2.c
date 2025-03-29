@@ -247,6 +247,8 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
   message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
 
+  fbputs("Anything?", separator_row - 1, 0);
+
   fbputs(message_buffer[MAX_MESSAGES - 1], separator_row - 1, 0);
   fbputs(message_buffer[MAX_MESSAGES - 2], separator_row - 2, 0);
   // display_messages();
