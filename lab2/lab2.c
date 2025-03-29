@@ -154,7 +154,6 @@ int main()
           /* Send message to server and input it into buffer*/
           write(sockfd, userArrayInput, strlen(userArrayInput));
           add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
-          fbputs(userArrayInput, 3, 0);
           
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
@@ -227,7 +226,7 @@ void add_message(const char *message) {
   message_count++;
 
   fbputs(message_buffer[message_count], 1, 0);
-
+  fbputs(message, 3, 0);
   display_messages();
 
   pthread_mutex_unlock(&message_mutex);
