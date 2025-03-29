@@ -325,7 +325,8 @@ void *network_thread_f(void *ignored)
     
     /* Add prefix for received messages */
     char display_msg[2][MAX_MESSAGE_LENGTH];
-    snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
+    // snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
+    snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "%s", recvBuf);
     snprintf(display_msg[1], MAX_MESSAGE_LENGTH, " ");
 
     /* Display message*/
