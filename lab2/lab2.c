@@ -155,7 +155,7 @@ int main()
           /* Add message to display */
           // char display_msg[MAX_MESSAGE_LENGTH];
           // snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput[0]);
-          add_message(userArrayInput);
+          // add_message(userArrayInput);
 
           /* Send message to server*/
           write(sockfd, userArrayInput[0], strlen(userArrayInput[0]));
