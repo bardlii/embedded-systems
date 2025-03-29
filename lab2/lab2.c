@@ -166,7 +166,7 @@ int main()
           /* Clear userArrayInput buffer */
           for (int rows = 0; rows < 2; rows++) {
             for (int cols = 0; cols < MAX_MESSAGE_LENGTH; cols++) {
-              userArrayInput[rows][cols] = ' ';
+              userArrayInput[rows][cols] = '\0';
             }
           }
           
@@ -303,15 +303,15 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
 void clear_display(void) {
   for (int row = 1; row < separator_row; row++) {
     for (int col = 0; col < total_cols; col++) {
-      fbputchar(' ', row, col);
+      fbputchar('\0', row, col);
     }
   }
 }
 
 void clear_input(void) {
   for (int col = 0; col < total_cols; col++) {
-    fbputchar(' ', separator_row + 1, col);
-    fbputchar(' ', separator_row + 2, col);
+    fbputchar('\0', separator_row + 1, col);
+    fbputchar('\0', separator_row + 2, col);
   }
 }
 
