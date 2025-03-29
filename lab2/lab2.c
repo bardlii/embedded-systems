@@ -126,7 +126,7 @@ int main()
   /* Start the network thread */
   pthread_create(&network_thread, NULL, network_thread_f, NULL);
 
-  char userArrayInput[BUFFER_SIZE] = {0};
+  char userArrayInput[2][MAX_MESSAGE_LENGTH];
   int cursorHorizontalPosition = 0;
   int cursorVerticalPosition = separator_row + 1; /* Start below the separator line */
 
@@ -152,32 +152,39 @@ int main()
       if (userTextInput[0] != '\0') { /* Ignore null character, user hasn't pressed anything. */
 
         if (userTextInput[0] == '\n') { /* Enter key pressed */
-          /* Send message to server and input it into buffer*/
-          write(sockfd, userArrayInput, strlen(userArrayInput));
-          
-          /* Add to our display with "You: " prefix */
+          /* Add message to display */
           char display_msg[MAX_MESSAGE_LENGTH];
-          snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput);
+          snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput[0]);
           add_message(display_msg);
+
+          /* Send message to server*/
+          write(sockfd, userArrayInput[0], strlen(userArrayInput[0]));
           
+          /* Clear the input buffer */
+          memset(userArrayInput, 0, sizeof(userArrayInput));
+
+          /* Clear userArrayInput buffer */
+          for (int rows = 0; rows < 2; rows++) {
+            for (int cols = 0; cols < MAX_MESSAGE_LENGTH; cols++) {
+              userArrayInput[rows][cols] = ' ';
+            }
+          }
+          
+          /* Clear input area */
+          clear_input();
+
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
           cursorVerticalPosition = separator_row + 1;
-
-          /* Clear input area */
-          clear_input();
           
           /* Display prompt and set cursor after*/
           fbputs("Enter text: ", cursorVerticalPosition, 0); 
           cursorHorizontalPosition = strlen("Enter text: ");
 
-          /* Clear the input buffer */
-          memset(userArrayInput, 0, sizeof(userArrayInput));
-
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           if (cursorHorizontalPosition > strlen("Enter text: ")) {
             cursorHorizontalPosition--;
-            userArrayInput[cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
+            userArrayInput[0][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
             fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
           }
   
@@ -185,7 +192,7 @@ int main()
             cursorHorizontalPosition--;
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-          if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput)) { //MOVE INTO ONE CONDITIONAL FOR ONE LINE
+          if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput[0])) { //MOVE INTO ONE CONDITIONAL FOR ONE LINE
             cursorHorizontalPosition++;
           }
 
@@ -196,15 +203,9 @@ int main()
           continue;
 
         } else {
-          /* Calculate position in user input array */
-          int inputPos = cursorHorizontalPosition - strlen("Enter text: ");
-          
-          /* Make sure we're within bounds of the array */
-          if (inputPos >= 0 && inputPos < BUFFER_SIZE - 1) {
-            userArrayInput[inputPos] = userTextInput[0]; /* Add character to array */
-            fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition); /* Display character on screen */
-            cursorHorizontalPosition++;
-          }
+          /* Display character on screen */
+          fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
+          cursorHorizontalPosition++;
         }
       }
   
@@ -222,24 +223,27 @@ int main()
 
 }
 
-void add_message(const char *message) {
+void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_lock(&message_mutex);
   
   /* Shift messages up to make room */
-  if (message_count == MAX_MESSAGES) {
-    for (int i = 0; i < message_count; i++) {
-      strcpy(message_buffer[i], message_buffer[i + 1]);
-    }
-    message_count--;
+  for (int i = 0; i < separator_row - 3; i++) {
+    strcpy(message_buffer[i], message_buffer[i + 2]);
   }
-
+  
+  // Clear the last two rows before inserting new messages
+  memset(message_buffer[separator_row - 1], ' ', MAX_MESSAGE_LENGTH);
+  memset(message_buffer[separator_row - 2], ' ', MAX_MESSAGE_LENGTH);
+  
   /* Add new message to buffer */
-  strncpy(message_buffer[message_count], message, MAX_MESSAGE_LENGTH - 1);
-  message_buffer[message_count][MAX_MESSAGE_LENGTH - 1] = '\0';
-  message_count++;
+  strncpy(message_buffer[separator_row - 1], message[1], MAX_MESSAGE_LENGTH - 1);
+  message_buffer[separator_row - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
+  strncpy(message_buffer[separator_row - 2], message[0], MAX_MESSAGE_LENGTH - 1);
+  message_buffer[separator_row - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
 
-  fbputs(message_buffer[message_count - 1], 1, 0);
-  display_messages();
+  fbputs(message_buffer[separator_row - 1], separator_row - 1, 0);
+  fbputs(message_buffer[separator_row - 2], separator_row - 2, 0);
+  // display_messages();
 
   pthread_mutex_unlock(&message_mutex);
 }
