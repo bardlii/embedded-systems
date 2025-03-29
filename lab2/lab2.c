@@ -227,13 +227,13 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_lock(&message_mutex);
   
   /* Shift messages up to make room */
-  for (int i = 0; i < separator_row - 3; i++) {
+  for (int i = 0; i < MAX_MESSAGES - 2; i++) {
     strcpy(message_buffer[i], message_buffer[i + 2]);
   }
   
   // Clear the last two rows before inserting new messages
-  memset(message_buffer[separator_row - 1], ' ', MAX_MESSAGE_LENGTH);
-  memset(message_buffer[separator_row - 2], ' ', MAX_MESSAGE_LENGTH);
+  memset(message_buffer[MAX_MESSAGES - 1], ' ', MAX_MESSAGE_LENGTH);
+  memset(message_buffer[MAX_MESSAGES - 2], ' ', MAX_MESSAGE_LENGTH);
   
   /* Add new message to buffer */
   strncpy(message_buffer[separator_row - 1], message[1], MAX_MESSAGE_LENGTH - 1);
@@ -290,6 +290,7 @@ void *network_thread_f(void *ignored)
     /* Add prefix for received messages */
     char display_msg[2][MAX_MESSAGE_LENGTH];
     snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
+    snprintf(display_msg[1], MAX_MESSAGE_LENGTH, " ");
 
     /* Display message*/
     add_message(display_msg);
