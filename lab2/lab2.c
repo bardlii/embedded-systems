@@ -231,6 +231,8 @@ int main()
 
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_lock(&message_mutex);
+
+  fbputs("Anything?", separator_row - 1, 0);
   
   /* Shift messages up to make room */
   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
@@ -246,8 +248,6 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
   message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
-
-  fbputs("Anything?", separator_row - 1, 0);
 
   fbputs(message_buffer[MAX_MESSAGES - 1], separator_row - 1, 0);
   fbputs(message_buffer[MAX_MESSAGES - 2], separator_row - 2, 0);
