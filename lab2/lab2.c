@@ -236,10 +236,10 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   memset(message_buffer[MAX_MESSAGES - 2], ' ', MAX_MESSAGE_LENGTH);
   
   /* Add new message to buffer */
-  strncpy(message_buffer[separator_row - 1], message[1], MAX_MESSAGE_LENGTH - 1);
-  message_buffer[separator_row - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
-  strncpy(message_buffer[separator_row - 2], message[0], MAX_MESSAGE_LENGTH - 1);
-  message_buffer[separator_row - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
+  strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
+  message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
+  strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
+  message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
 
   fbputs(message_buffer[separator_row - 1], separator_row - 1, 0);
   fbputs(message_buffer[separator_row - 2], separator_row - 2, 0);
