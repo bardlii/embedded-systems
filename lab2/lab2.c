@@ -153,7 +153,7 @@ int main()
         if (userTextInput[0] == '\n') { /* Enter key pressed */
           /* Send message to server and input it into buffer*/
           write(sockfd, userArrayInput, strlen(userArrayInput));
-          add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
+          // add_message(userArrayInput); /* Might not be necessary if it's handled in network thread?*/
           
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
@@ -224,9 +224,6 @@ void add_message(const char *message) {
   strncpy(message_buffer[message_count], message, MAX_MESSAGE_LENGTH - 1);
   message_buffer[message_count][MAX_MESSAGE_LENGTH - 1] = '\0';
   message_count++;
-
-  fbputs(message_buffer[message_count - 1], 1, 0);
-  fbputs(message, 3, 0);
 
   display_messages();
 
