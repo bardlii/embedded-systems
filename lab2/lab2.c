@@ -303,15 +303,15 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
 void clear_display(void) {
   for (int row = 1; row < separator_row; row++) {
     for (int col = 0; col < total_cols; col++) {
-      fbputchar('\0', row, col);
+      fbputchar(' ', row, col);
     }
   }
 }
 
 void clear_input(void) {
   for (int col = 0; col < total_cols; col++) {
-    fbputchar('\0', separator_row + 1, col);
-    fbputchar('\0', separator_row + 2, col);
+    fbputchar(' ', separator_row + 1, col);
+    fbputchar(' ', separator_row + 2, col);
   }
 }
 
