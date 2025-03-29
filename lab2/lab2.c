@@ -54,7 +54,7 @@ int message_count = 0;
 pthread_mutex_t message_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* Function prototypes */
-void add_message(const char *message);
+void add_message(const char message[2][MAX_MESSAGE_LENGTH]);
 void display_messages();
 void clear_display();
 void clear_input();
@@ -153,9 +153,9 @@ int main()
 
         if (userTextInput[0] == '\n') { /* Enter key pressed */
           /* Add message to display */
-          char display_msg[MAX_MESSAGE_LENGTH];
-          snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput[0]);
-          add_message(display_msg);
+          // char display_msg[MAX_MESSAGE_LENGTH];
+          // snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput[0]);
+          add_message(userArrayInput);
 
           /* Send message to server*/
           write(sockfd, userArrayInput[0], strlen(userArrayInput[0]));
@@ -288,8 +288,8 @@ void *network_thread_f(void *ignored)
     printf("%s", recvBuf);
     
     /* Add prefix for received messages */
-    char display_msg[MAX_MESSAGE_LENGTH];
-    snprintf(display_msg, MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
+    char display_msg[2][MAX_MESSAGE_LENGTH];
+    snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
 
     /* Display message*/
     add_message(display_msg);
