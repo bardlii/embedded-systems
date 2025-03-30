@@ -50,7 +50,6 @@ int total_rows, total_cols; /* Total rows and columns on screen */
 
 /* Message buffer */
 char message_buffer[MAX_MESSAGES][MAX_MESSAGE_LENGTH];
-int message_count = 0;
 pthread_mutex_t message_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* Function prototypes */
@@ -160,7 +159,7 @@ int main()
 
           /* Combine both rows to send through socket */
           char combinedMessage[MAX_MESSAGE_LENGTH * 2 + 2]; // Extra space for newline or null terminator
-          snprintf(combinedMessage, sizeof(combinedMessage), "%s\n%s", userArrayInput[0], userArrayInput[1]);
+          snprintf(combinedMessage, sizeof(combinedMessage), "%s%s", userArrayInput[0], userArrayInput[1]);
           
           /* Send message to server*/
           write(sockfd, combinedMessage, strlen(combinedMessage));
@@ -213,9 +212,6 @@ int main()
           continue;
 
         } else {
-          /* Calculate position in user input array */
-          int inputPos = cursorHorizontalPosition - strlen("Enter text: ");
-          
           /* Add character to array */
           userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
           
@@ -301,9 +297,6 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
   message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
 
-  /* Update message count */
-  message_count = (message_count + 2 > MAX_MESSAGES) ? MAX_MESSAGES : message_count + 2;
-
   /* Clear the display area */
   clear_display();
 
@@ -369,17 +362,17 @@ void *network_thread_f(void *ignored)
 
     // Ensure the buffer is large enough to extract two messages
     if (n >= MAX_MESSAGE_LENGTH * 2) {
-        strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
-        display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+      strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
+      display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
 
-        strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH - 1);
-        display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+      strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH - 1);
+      display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
     } else {
-        // Handle case where the data is incomplete or malformed
-        strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
-        display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
-        strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
-        display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+      // Handle case where the data is incomplete or malformed
+      strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
+      display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+      strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
+      display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
     }
 
     /* Display message */
