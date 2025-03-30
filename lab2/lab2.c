@@ -212,22 +212,44 @@ int main()
           continue;
 
         } else {
-          /* Add character to array */
-          userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
+          // /* Add character to array */
+          // userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
           
-          /* Display character on screen */
-          fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
-          cursorHorizontalPosition++;
+          // /* Display character on screen */
+          // fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
+          // cursorHorizontalPosition++;
 
-          /* Ensure cursor is displayed after the character */
-          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+          // /* Ensure cursor is displayed after the character */
+          // fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
 
-          /* Text wrapping logic */
-          if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
-            if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
-              cursorHorizontalPosition = 0; /* Reset column position after prompt */
-              cursorVerticalPosition++; /* Move to the next row */
-              fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          // /* Text wrapping logic */
+          // if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
+          //   if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
+          //     cursorHorizontalPosition = 0; /* Reset column position after prompt */
+          //     cursorVerticalPosition++; /* Move to the next row */
+          //     fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          //   }
+          // }
+
+          /* Add character to array */
+          int rowIndex = cursorVerticalPosition - (separator_row + 1);
+          if (rowIndex >= 0 && rowIndex < 2) {
+            userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
+            
+            /* Display character on screen */
+            fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
+            cursorHorizontalPosition++;
+
+            /* Ensure cursor is displayed after the character */
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+
+            /* Text wrapping logic */
+            if (cursorHorizontalPosition >= total_cols) {
+              if (cursorVerticalPosition < separator_row + 2) { /* Ensure within input rows */
+                cursorHorizontalPosition = 0;
+                cursorVerticalPosition++;
+                fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+              }
             }
           }
         }
