@@ -134,6 +134,7 @@ int main()
   fbputs("Enter text: ", cursorVerticalPosition, 0);
   cursorHorizontalPosition = strlen("Enter text: ");
   fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place initial cursor */  
+  
   /* Look for and handle keypresses */
   for (;;) {
     /* Read the keyboard input */
@@ -157,8 +158,12 @@ int main()
           // snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput[0]);
           // add_message(userArrayInput);
 
+          /* Combine both rows to send through socket */
+          char combinedMessage[MAX_MESSAGE_LENGTH * 2 + 2]; // Extra space for newline or null terminator
+          snprintf(combinedMessage, sizeof(combinedMessage), "%s\n%s", userArrayInput[0], userArrayInput[1]);
+          
           /* Send message to server*/
-          write(sockfd, userArrayInput[0], strlen(userArrayInput[0]));
+          write(sockfd, combinedMessage, strlen(combinedMessage));
           
           /* Clear the input buffer */
           memset(userArrayInput, 0, sizeof(userArrayInput));
@@ -204,7 +209,7 @@ int main()
         } else if (userTextInput[0] == '\0') { /* Ignore null character */
           continue;
 
-        } else if (cursorHorizontalPosition >= BUFFER_SIZE - 1) { /* Ignore input if buffer is full */
+        } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH - 1) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
           continue;
 
         } else {
@@ -212,7 +217,7 @@ int main()
           int inputPos = cursorHorizontalPosition - strlen("Enter text: ");
           
           /* Add character to array */
-          userArrayInput[cursorVerticalPosition - (separator_row + 1)][inputPos] = userTextInput[0];
+          userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
           
           /* Display character on screen */
           fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
@@ -223,12 +228,10 @@ int main()
 
           /* Text wrapping logic */
           if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
-            if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
-              cursorHorizontalPosition = strlen("Enter text: "); /* Reset column position after prompt */
+            if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
+              cursorHorizontalPosition = 0; /* Reset column position after prompt */
               cursorVerticalPosition++; /* Move to the next row */
               fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-            } else {
-                cursorHorizontalPosition = total_cols - 1; /* Prevent further input */
             }
           }
         }
@@ -299,9 +302,9 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
           row++;
           col = 0;
         }
-    if (row >= separator_row) break; /* Stop if we exceed the display area */
-      fbputchar(message_buffer[i][j], row, col++);
-}
+        if (row >= separator_row) break; /* Stop if we exceed the display area */
+        fbputchar(message_buffer[i][j], row, col++);
+      }
     }
   }
   
@@ -329,19 +332,44 @@ void *network_thread_f(void *ignored)
   int n;
 
   /* Receive data */
-  while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
+  // while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
+  //   recvBuf[n] = '\0';
+  //   printf("%s", recvBuf);
+    
+  //   /* Add prefix for received messages */
+  //   char display_msg[2][MAX_MESSAGE_LENGTH];
+  //   // snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
+  //   snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "%s", recvBuf);
+  //   snprintf(display_msg[1], MAX_MESSAGE_LENGTH, " ");
+
+  //   /* Display message*/
+  //   add_message(display_msg);
+  // }
+  while ((n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0) {
     recvBuf[n] = '\0';
     printf("%s", recvBuf);
-    
-    /* Add prefix for received messages */
-    char display_msg[2][MAX_MESSAGE_LENGTH];
-    // snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
-    snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "%s", recvBuf);
-    snprintf(display_msg[1], MAX_MESSAGE_LENGTH, " ");
 
-    /* Display message*/
+    char display_msg[2][MAX_MESSAGE_LENGTH];
+
+    // Ensure the buffer is large enough to extract two messages
+    if (n >= MAX_MESSAGE_LENGTH * 2) {
+        strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
+        display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+
+        strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH - 1);
+        display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+    } else {
+        // Handle case where the data is incomplete or malformed
+        strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
+        display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+        strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
+        display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+    }
+
+    /* Display message */
     add_message(display_msg);
   }
+
 
   return NULL;
 
