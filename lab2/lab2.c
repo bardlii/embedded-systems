@@ -251,65 +251,81 @@ int main()
 
 // void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
 //   pthread_mutex_lock(&message_mutex);
-  
-//   /* Shift messages up to make room */
+
+//   /* Shift all messages up by two positions to make room for new message */
 //   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
 //     strcpy(message_buffer[i], message_buffer[i + 2]);
 //   }
   
-//   // Clear the last two rows before inserting new messages
-//   memset(message_buffer[MAX_MESSAGES - 1], ' ', MAX_MESSAGE_LENGTH);
-//   memset(message_buffer[MAX_MESSAGES - 2], ' ', MAX_MESSAGE_LENGTH);
-  
-//   /* Add new message to buffer */
-//   strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
-//   message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
+//   /* Add new message to buffer (two lines) */
 //   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
 //   message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
-
-//   fbputs(message_buffer[MAX_MESSAGES - 1], separator_row - 1, 0);
-//   fbputs(message_buffer[MAX_MESSAGES - 2], separator_row - 2, 0);
-//   // display_messages();
-
+  
+//   strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
+//   message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
+  
+//   /* Clear the display area */
+//   clear_display();
+  
+//   /* Display all messages in the buffer with text wrapping */
+//   for (int i = 0; i < MAX_MESSAGES; i++) {
+//         int row = i + 1; /* +1 to skip the top border row */
+//     if (row < separator_row) { /* Only display if row is above the separator */
+//       int col = 0;
+//       for (int j = 0; j < strlen(message_buffer[i]); j++) {
+//         if (col >= total_cols) { /* Wrap to the next row if the column limit is reached */
+//           row++;
+//           col = 0;
+//         }
+//         if (row >= separator_row) break; /* Stop if we exceed the display area */
+//         fbputchar(message_buffer[i][j], row, col++);
+//       }
+//     }
+//   }
+  
 //   pthread_mutex_unlock(&message_mutex);
 // }
 
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_lock(&message_mutex);
 
-  /* Shift all messages up by two positions to make room for new message */
+  /* Shift all messages up by two positions to make room for new messages */
   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
     strcpy(message_buffer[i], message_buffer[i + 2]);
   }
-  
-  /* Add new message to buffer (two lines) */
+
+  /* Add new messages to the buffer */
   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
   message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
-  
+
   strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
   message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
-  
+
+  /* Update message count */
+  message_count = (message_count + 2 > MAX_MESSAGES) ? MAX_MESSAGES : message_count + 2;
+
   /* Clear the display area */
   clear_display();
-  
-  /* Display all messages in the buffer with text wrapping */
+
+  /* Display all messages with proper wrapping */
   for (int i = 0; i < MAX_MESSAGES; i++) {
-        int row = i + 1; /* +1 to skip the top border row */
-    if (row < separator_row) { /* Only display if row is above the separator */
-      int col = 0;
-      for (int j = 0; j < strlen(message_buffer[i]); j++) {
-        if (col >= total_cols) { /* Wrap to the next row if the column limit is reached */
-          row++;
-          col = 0;
-        }
-        if (row >= separator_row) break; /* Stop if we exceed the display area */
-        fbputchar(message_buffer[i][j], row, col++);
+    int row = separator_row - (MAX_MESSAGES - i);
+    if (row < 1 || row >= separator_row) continue;
+
+    int col = 0;
+    for (int j = 0; j < strlen(message_buffer[i]); j++) {
+      if (col >= total_cols) { /* Wrap to next line if needed */
+        row++;
+        col = 0;
+        if (row >= separator_row) break;
       }
+      fbputchar(message_buffer[i][j], row, col++);
     }
   }
-  
+
   pthread_mutex_unlock(&message_mutex);
 }
+
 
 void clear_display(void) {
   for (int row = 1; row < separator_row; row++) {
