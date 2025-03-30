@@ -274,7 +274,7 @@ int main()
   return 0;
 
 }
-
+}
 // void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
 //   pthread_mutex_lock(&message_mutex);
 
@@ -365,8 +365,7 @@ void clear_input(void) {
   }
 }
 
-void *network_thread_f(void *ignored)
-{
+void *network_thread_f(void *ignored) {
   char recvBuf[BUFFER_SIZE];
   int n;
 
