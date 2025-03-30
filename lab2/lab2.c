@@ -183,17 +183,17 @@ int main()
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           if (cursorHorizontalPosition > strlen("Enter text: ")) {
-          cursorHorizontalPosition--;
-          userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
-          fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
-          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-}
+            cursorHorizontalPosition--;
+            userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
+            fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          }
           
-          } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
+        } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
           if (cursorHorizontalPosition > strlen("Enter text: ")) {
-          cursorHorizontalPosition--;
-          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-}
+            cursorHorizontalPosition--;
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          }
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
           if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput[0])) {
