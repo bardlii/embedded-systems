@@ -181,19 +181,21 @@ int main()
           fbputs("Enter text: ", cursorVerticalPosition, 0); 
           cursorHorizontalPosition = strlen("Enter text: ");
 
-        } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
-          if (cursorHorizontalPosition > strlen("Enter text: ")) {
-            cursorHorizontalPosition--;
-            userArrayInput[0][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
-            fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
-          }
+        } else if ((userTextInput[0] == '\b') && (cursorHorizontalPosition > strlen("Enter text: "))) { /* Backspace key pressed */
+          cursorHorizontalPosition--;
+          userArrayInput[0][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
+          fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
+          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          
   
         } else if ((userTextInput[0] == '<') && (cursorHorizontalPosition > strlen("Enter text: "))) { /* Left arrow key pressed */
             cursorHorizontalPosition--;
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
           if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput[0])) { //MOVE INTO ONE CONDITIONAL FOR ONE LINE
             cursorHorizontalPosition++;
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
           }
 
         } else if (userTextInput[0] == '\0') { /* Ignore null character */
@@ -207,11 +209,23 @@ int main()
           int inputPos = cursorHorizontalPosition - strlen("Enter text: ");
           
           /* Add character to array */
-          userArrayInput[0][inputPos] = userTextInput[0];
+          userArrayInput[cursorVerticalPosition - (separator_row + 1)][inputPos] = userTextInput[0];
           
           /* Display character on screen */
           fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
           cursorHorizontalPosition++;
+
+          /* Text wrapping logic */
+          if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
+            if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
+              cursorHorizontalPosition = 0; /* Reset column position */
+              cursorVerticalPosition++; /* Move to the next row */
+              fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+            } else {
+              /* Optional: Handle overflow (e.g., discard input or prevent further input) */
+              cursorHorizontalPosition = total_cols - 1; /* Prevent further input */
+            }
+          }
         }
       }
     }
