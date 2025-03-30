@@ -251,7 +251,7 @@ int main()
 
             /* Ensure cursor is displayed after the character */
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
-
+          }
           /* Text wrapping logic */
           if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
             if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
@@ -274,7 +274,7 @@ int main()
   return 0;
 
 }
-}
+
 // void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
 //   pthread_mutex_lock(&message_mutex);
 
@@ -407,11 +407,6 @@ void *network_thread_f(void *ignored) {
     /* Display message */
     add_message(display_msg);
   }
-
-
   return NULL;
-
-
-
 }
 
