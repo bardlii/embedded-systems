@@ -254,14 +254,7 @@ int main()
 
           /* Text wrapping logic */
           if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
-<<<<<<< Updated upstream
-            if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
-=======
             if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
               cursorHorizontalPosition = 0; /* Reset column position after prompt */
               cursorVerticalPosition++; /* Move to the next row */
               fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
