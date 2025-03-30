@@ -133,7 +133,7 @@ int main()
   /* Display text prompt for user */
   fbputs("Enter text: ", cursorVerticalPosition, 0);
   cursorHorizontalPosition = strlen("Enter text: ");
-  
+  fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place initial cursor */  
   /* Look for and handle keypresses */
   for (;;) {
     /* Read the keyboard input */
@@ -189,8 +189,8 @@ int main()
           
   
         } else if ((userTextInput[0] == '<') && (cursorHorizontalPosition > strlen("Enter text: "))) { /* Left arrow key pressed */
-            cursorHorizontalPosition--;
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          cursorHorizontalPosition--;
+          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
           if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput[0])) { //MOVE INTO ONE CONDITIONAL FOR ONE LINE
@@ -214,6 +214,9 @@ int main()
           /* Display character on screen */
           fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
           cursorHorizontalPosition++;
+
+          /* Ensure cursor is displayed after the character */
+          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
 
           /* Text wrapping logic */
           if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
@@ -284,14 +287,19 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   /* Clear the display area */
   clear_display();
   
-  /* Display all messages in the buffer */
+  /* Display all messages in the buffer with text wrapping */
   for (int i = 0; i < MAX_MESSAGES; i++) {
-    /* Calculate row position (from top to bottom) */
     int row = i + 1; /* +1 to skip the top border row */
-    
-    /* Only display if row is above the separator */
-    if (row < separator_row) {
-      fbputs(message_buffer[i], row, 0);
+    if (row < separator_row) { /* Only display if row is above the separator */
+      int col = 0;
+      for (int j = 0; j < strlen(message_buffer[i]); j++) {
+        if (col >= total_cols) { /* Wrap to the next row if the column limit is reached */
+          row++;
+          col = 0;
+        }
+        if (row >= separator_row) break; /* Stop if we exceed the display area */
+        fbputchar(message_buffer[i][j], row, col++);
+      }
     }
   }
   
