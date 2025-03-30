@@ -181,19 +181,22 @@ int main()
           fbputs("Enter text: ", cursorVerticalPosition, 0); 
           cursorHorizontalPosition = strlen("Enter text: ");
 
-        } else if ((userTextInput[0] == '\b') && (cursorHorizontalPosition > strlen("Enter text: "))) { /* Backspace key pressed */
+        } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
+          if (cursorHorizontalPosition > strlen("Enter text: ")) {
           cursorHorizontalPosition--;
-          userArrayInput[0][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
+          userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
           fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
           fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+}
           
-  
-        } else if ((userTextInput[0] == '<') && (cursorHorizontalPosition > strlen("Enter text: "))) { /* Left arrow key pressed */
+          } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
+          if (cursorHorizontalPosition > strlen("Enter text: ")) {
           cursorHorizontalPosition--;
           fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+}
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-          if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput[0])) { //MOVE INTO ONE CONDITIONAL FOR ONE LINE
+          if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput[0])) {
             cursorHorizontalPosition++;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
           }
@@ -221,12 +224,11 @@ int main()
           /* Text wrapping logic */
           if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
             if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
-              cursorHorizontalPosition = 0; /* Reset column position */
+              cursorHorizontalPosition = strlen("Enter text: "); /* Reset column position after prompt */
               cursorVerticalPosition++; /* Move to the next row */
               fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
             } else {
-              /* Optional: Handle overflow (e.g., discard input or prevent further input) */
-              cursorHorizontalPosition = total_cols - 1; /* Prevent further input */
+                cursorHorizontalPosition = total_cols - 1; /* Prevent further input */
             }
           }
         }
@@ -289,7 +291,7 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   
   /* Display all messages in the buffer with text wrapping */
   for (int i = 0; i < MAX_MESSAGES; i++) {
-    int row = i + 1; /* +1 to skip the top border row */
+        int row = i + 1; /* +1 to skip the top border row */
     if (row < separator_row) { /* Only display if row is above the separator */
       int col = 0;
       for (int j = 0; j < strlen(message_buffer[i]); j++) {
@@ -297,28 +299,14 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
           row++;
           col = 0;
         }
-        if (row >= separator_row) break; /* Stop if we exceed the display area */
-        fbputchar(message_buffer[i][j], row, col++);
-      }
+    if (row >= separator_row) break; /* Stop if we exceed the display area */
+      fbputchar(message_buffer[i][j], row, col++);
+}
     }
   }
   
   pthread_mutex_unlock(&message_mutex);
 }
-
-// void display_messages(void) {
-//   clear_display();
-
-//   /* Calculate how many messages we can display */
-//   int displayable = message_count < display_area_rows ? message_count : display_area_rows;
-
-//   for (int i = 0; i < displayable; i++) {
-//     int msg_index = message_count - displayable + i;
-//     int row = separator_row - displayable + i;
-
-//     fbputs(message_buffer[msg_index], row, 0);
-//   }
-// }
 
 void clear_display(void) {
   for (int row = 1; row < separator_row; row++) {
@@ -357,28 +345,7 @@ void *network_thread_f(void *ignored)
 
   return NULL;
 
-  /*
-void draw_cursor(int row, int col) {
-    unsigned char *pixel = framebuffer +
-        (row * FONT_HEIGHT * 2 + fb_vinfo.yoffset) * fb_finfo.line_length +
-        (col * FONT_WIDTH * 2 + fb_vinfo.xoffset) * BITS_PER_PIXEL / 8;
 
-    for (int y = 0; y < FONT_HEIGHT * 2; y++) {
-        for (int x = 0; x < FONT_WIDTH * 2; x++) {
-            pixel[0] = 255; // Red
-            pixel[1] = 255; // Green
-            pixel[2] = 255; // Blue
-            pixel[3] = 0;   // Alpha
-            pixel += 4;     // Move to the next pixel
-        }
-        pixel += fb_finfo.line_length - (FONT_WIDTH * 2 * 4); // Move to the next row
-    }
-}
-
-void erase_cursor(int row, int col, char c) {
-    fbputchar(c, row, col); // Redraw the character at the cursor position
-}
-    */
 
 }
 
