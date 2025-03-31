@@ -293,7 +293,6 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_unlock(&message_mutex);
 }
 
-
 void clear_display(void) {
   for (int row = 1; row < separator_row; row++) {
     for (int col = 0; col < total_cols; col++) {
