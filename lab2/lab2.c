@@ -165,8 +165,9 @@ int main()
           /* Send message to server*/
           write(sockfd, combinedMessage, strlen(combinedMessage));
           
-          /* Clear the input buffer */
+          /* Clear the input buffer and combined message buffer*/
           memset(userArrayInput, 0, sizeof(userArrayInput));
+          combinedMessage[0] = '\0';
 
           /* Clear userArrayInput buffer */
           for (int rows = 0; rows < 2; rows++) {
