@@ -157,9 +157,6 @@ int main()
           /* Combine both rows to send through socket */
           char combinedMessage[BUFFER_SIZE]; // Extra space for newline or null terminator
           snprintf(combinedMessage, sizeof(combinedMessage), "%s%s", userArrayInput[0], userArrayInput[1]);
-          printf("userArrayInput[0]: %s\n", userArrayInput[0]);
-          printf("userArrayInput[1]: %s\n", userArrayInput[1]);
-          printf("combinedMessage: %s\n", combinedMessage);
           
           /* Send message to server*/
           write(sockfd, combinedMessage, strlen(combinedMessage));
@@ -356,11 +353,6 @@ void *network_thread_f(void *ignored)
 
     /* Display message */
     add_message(display_msg);
-
-    /* Debug output */
-    printf("\n\nAfter adding msg: \n");
-    printf("display_msg[0]: %s\n", display_msg[0]);
-    printf("display_msg[1]: %s\n", display_msg[1]);
   }
   
   return NULL;
