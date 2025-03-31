@@ -188,6 +188,7 @@ int main()
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
           cursorVerticalPosition = separator_row + 1;
+          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           if (cursorHorizontalPosition > strlen("Enter text: ")) {
@@ -272,7 +273,7 @@ int main()
           cursorHorizontalPosition++;
 
           /* Ensure cursor is displayed after the character */
-          if (cursorHorizontalPosition < total_cols) {
+          if (cursorHorizontalPosition < total_cols - 1) {
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
           }
 
