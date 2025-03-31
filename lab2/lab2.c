@@ -241,7 +241,7 @@ int main()
 
           /* Add character to array */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < MAX_MESSAGE_LENGTH) {
+          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols) {
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
             // userArrayInput[rowIndex][cursorHorizontalPosition + 1] = '\0'; // Ensure null-termination
             
@@ -275,7 +275,7 @@ int main()
 
           /* Text wrapping logic */
           if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
-            if (cursorVerticalPosition < separator_row + 1) { /* Ensure we don't exceed the input area */
+            if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
               cursorHorizontalPosition = 0; /* Reset column position */
               cursorVerticalPosition++; /* Move to the next row */
               fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
