@@ -193,7 +193,7 @@ int main()
           
         } else if (packet.keycode[0] == 0x50) { /* Left arrow key pressed */
             int rowIndex = cursorVerticalPosition - (separator_row + 1);
-            char previousChar;
+            char charAfter;
 
             // If at null character of the second line, continue to the next displayable character of the first line
             // if (userArrayInput[rowIndex][cursorHorizontalPosition] == '\0') {
@@ -205,20 +205,27 @@ int main()
             if (rowIndex == 0 && cursorHorizontalPosition == 0) {
               // Do nothing, already at the start of the first row
               continue;
-            } else if (rowIndex == 1 && cursorHorizontalPosition == 0) {
-              // Move to the last character of the first row
-              cursorVerticalPosition--; // Move to the first row
-              previousChar = userArrayInput[1][0];
-              cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last character of the first row, but not the null terminator
-              fbputchar(previousChar, 1, 0); /* Restore the previous character on the second row, first column */
-              fbputchar("|", 0, cursorHorizontalPosition+1); /* Place cursor on the 63rd index of display, but dont actually change the value of it in user array*/
+            } else if (rowIndex > 0 && cursorHorizontalPosition == 0) {
+                // Move to the last character of the first row
+                cursorVerticalPosition--; // Move to the first row
+                charAfter = userArrayInput[1][0];
+                cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last character of the first row, but not the null terminator
+                fbputchar(charAfter, 1, 0); /* Restore the previous character on the second row, first column */
+                fbputchar("_", 0, cursorHorizontalPosition+1); /* Place cursor on the 63rd index of display, but dont actually change the value of it in user array*/
+                printf("Left arrow pressed, cursor at (%d, %d)\n", cursorHorizontalPosition, cursorVerticalPosition);
+                printf("Previous character: %c\n", charAfter);
+                printf("Current character: %c\n", userArrayInput[rowIndex][cursorHorizontalPosition]);
             } else if (cursorHorizontalPosition > 0) {
-              // Move left within the same row
-              cursorHorizontalPosition--;
-              previousChar = userArrayInput[rowIndex][cursorHorizontalPosition];
-              fbputchar("|", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-              fbputchar(previousChar, cursorVerticalPosition, cursorHorizontalPosition+1); /* Restore the previous character to the right */
+                // Move left within the same row
+                cursorHorizontalPosition--;
+                charAfter = userArrayInput[rowIndex][cursorHorizontalPosition];
+                fbputchar("_", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition+1); /* Restore the previous character to the right */
+                printf("Left arrow pressed, cursor at (%d, %d)\n", cursorHorizontalPosition, cursorVerticalPosition);
+                printf("Previous character: %c\n", charAfter);
+                printf("Current character: %c\n", userArrayInput[rowIndex][cursorHorizontalPosition]);
             } 
+            
         
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
             // Check that we are not at the last column and that the next character is present.
