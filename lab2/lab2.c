@@ -243,7 +243,7 @@ int main()
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
           if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition <= total_cols - 1) {
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
-            // userArrayInput[rowIndex][MAX_MESSAGE_LENGTH] = '\0'; // Ensure null-termination
+            userArrayInput[rowIndex][MAX_MESSAGE_LENGTH] = '\0'; // Ensure null-termination
             
             printf("userArrayInput[0]: ");
             for (int col = 0; col <= MAX_MESSAGE_LENGTH+1; col++) {
