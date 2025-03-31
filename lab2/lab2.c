@@ -241,7 +241,7 @@ int main()
 
           /* Add character to array */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols - 1) {
+          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition <= total_cols - 1) {
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
             userArrayInput[rowIndex][MAX_MESSAGE_LENGTH] = '\0'; // Ensure null-termination
             
@@ -274,7 +274,7 @@ int main()
           }
 
           /* Text wrapping logic */
-          if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
+          if (cursorHorizontalPosition >= total_cols - 1) { /* Check if the current row is full */
             if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
               cursorHorizontalPosition = 0; /* Reset column position */
               cursorVerticalPosition++; /* Move to the next row */
