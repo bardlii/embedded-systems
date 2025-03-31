@@ -213,7 +213,7 @@ int main()
         } else if (userTextInput[0] == '\0') { /* Ignore null character */
           continue;
 
-        } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
+        } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH - 1) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
           continue;
 
         } else {
