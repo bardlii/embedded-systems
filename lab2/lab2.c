@@ -186,25 +186,25 @@ int main()
             for (int i = cursorHorizontalPosition; i < strlen(userArrayInput[0]); i++) {
               userArrayInput[cursorVerticalPosition - (separator_row + 1)][i] = userArrayInput[cursorVerticalPosition - (separator_row + 1)][i + 1];
             }
-            fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition);
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); 
           } else {
             continue;
           }
           
-        } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
-            if (cursorHorizontalPosition > 0) { 
-            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition); // Restore previous character
-            cursorHorizontalPosition--;
+        } else if (packet.keycode[0] == 0x50) { /* Left arrow key pressed */
+            int rowIndex = cursorVerticalPosition - (separator_row + 1);
+            char previousChar = userArrayInput[rowIndex][cursorHorizontalPosition - 1];
+
+            fbputchar(previousChar, cursorVerticalPosition, cursorHorizontalPosition - 1); /* Restore the previous character */
+            cursorHorizontalPosition--; /* Move cursor left */
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-            } else if (cursorVerticalPosition > separator_row + 1) { /* Move to the previous row */
-            cursorVerticalPosition--;
-            cursorHorizontalPosition = strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)]); /* Move to the end of the previous row */
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-            }
+            fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition - 1); /* Clear the next character */
+
+
+
           } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
             int currentLineLength = strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)]);
-            if (cursorHorizontalPosition < currentLineLength) {
+            if (cursorHorizontalPosition < currentLineLength) { // Move right within the same row */
             fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
             cursorHorizontalPosition++;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
