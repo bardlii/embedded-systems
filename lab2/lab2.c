@@ -190,46 +190,31 @@ int main()
             int rowIndex = cursorVerticalPosition - (separator_row + 1);
             char charAfter;
 
-            // Null character at first row, first line
-            
-            if ((rowIndex == 0) && (userArrayInput[rowIndex][cursorHorizontalPosition] == '\0')) {
-              fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); // Clear the character at the cursor position
-            // Start of first row with character
-            } else 
-            
-            if (rowIndex == 0 && cursorHorizontalPosition == 0) {
-              // Do nothing, already at the start of the first row
-              continue;
-            } else if (rowIndex > 0 && cursorHorizontalPosition == 0) {
-              // Move to the last character of the first row
-              cursorVerticalPosition--; // Move to the first row
-              charAfter = userArrayInput[1][0];
-              if (charAfter == '\0') {
-                cursorHorizontalPosition = [MAX_MESSAGE_LENGTH - 2]; // Move to the last character of the first row, but not the null terminator
-              } else {
-                cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 1; // Move to the last character of the first row, but not the null terminator
-              }
-
-              fbputchar(charAfter, 1, 0); /* Restore the previous character on the second row, first column */
-              fbputchar("_", 0, cursorHorizontalPosition+1); /* Place cursor on the 63rd index of display, but dont actually change the value of it in user array*/
-              printf("Left arrow pressed, shift row, cursor at (%d, %d)\n", cursorHorizontalPosition, cursorVerticalPosition);
-              printf("Character after: %c\n", charAfter);
-              printf("Current character to edit: %c\n", userArrayInput[rowIndex][cursorHorizontalPosition]);
-              printf("Row index: %d\n", rowIndex);
-              // Move left within the same row
-            } else if (cursorHorizontalPosition > 0) {
-                // Move left within the first row
+            // IS IT A NULL CHARACTER?
+            if (userArrayInput[rowIndex][cursorHorizontalPosition] == '\0') {
+              if (rowIndex > 0) {
+                // Store character on first column of second row
+                cursorHorizontalPosition = 0;
+                charAfter = userArrayInput[rowIndex][cursorHorizontalPosition]; //charAfter itself
+                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character on the second row, first column */
+                cursorVerticalPosition--; // Move to the previous row
+                cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last character of the previous row, but not the null terminator
+                fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* editing last character of first row */
+                fbputchar('\n', cursorVerticalPosition, cursorHorizontalPosition+1); /* Place cursor on the 62nd index of display, but dont actually change the value of it in user array*/
+              } else if (rowIndex == 0) { // null character infront, but you need to on the second to last character
+                //LAST CHARACTER OF FIRST ROW
+                charAfter = userArrayInput[rowIndex][cursorHorizontalPosition - 2];
+                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition - 2); /* Restore the character on the first row, secodn to last column */
+                cursorHorizontalPosition--; // Move to 62nd index to edit
+                fbputchar('_', rowIndex, cursorHorizontalPosition); /* Place cursor on the 62nd index of display, but dont actually change the value of it in user array*/
+              } 
+              
+            } else if (cursorHorizontalPosition > 0) { // REGULAR
                 charAfter = userArrayInput[rowIndex][cursorHorizontalPosition];
                 fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character to the right of cursor */
                 cursorHorizontalPosition--; /* Move cursor left */
                 fbputchar("_", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-
-                printf("Left arrow pressed, cursor at (%d, %d)\n", cursorHorizontalPosition, cursorVerticalPosition);
-                printf("Character after: %c\n", charAfter);
-                printf("Current character to edit: %c\n", userArrayInput[rowIndex][cursorHorizontalPosition]);
-                printf("Row index: %d\n", rowIndex);
-            } 
-            
+            }  
         
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
             // Check that we are not at the last column and that the next character is present.
