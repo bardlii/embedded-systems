@@ -187,7 +187,7 @@ int main()
               fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
               
               /* Replace original character with first char of lower row*/
-              userArrayInput[rowIndex][cursorHorizontalPosition] = userArrayInput[1][0];
+              userArrayInput[0][cursorHorizontalPosition] = userArrayInput[1][0];
               
               /* Shift bottom row characters left in display and buffer */
               for (int i = 0; i < total_cols - 1; i++) {
@@ -201,6 +201,7 @@ int main()
             }
           
           } else {
+            cursorHorizontalPosition--;
             /* Shift characters to the right of the cursor left */
             for (int i = cursorHorizontalPosition; i < total_cols - 1; i++) {
               if (userArrayInput[rowIndex][i + 1] != '\0') {
@@ -211,7 +212,7 @@ int main()
               userArrayInput[rowIndex][i] = userArrayInput[rowIndex][i + 1];
             }
             /* Place cursor char */
-            fbputchar('|', cursorVerticalPosition, --cursorHorizontalPosition);
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
             
             if (rowIndex == 0) { /* On first row */
               /* Replace last character in first row with first char of lower row*/
