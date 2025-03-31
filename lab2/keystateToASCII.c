@@ -45,8 +45,8 @@
          // Special keys
          case 0x0028:  charArray[0] = '\n'; break; // "00 28 00": Enter key
          case 0x002A:  charArray[0] = '\b'; break; // "00 2A 00": Backspace
-         case 0x0050:  charArray[0] = '<'; break; // "00 50 00": Left arrow
-         case 0x004F:  charArray[0] = '>'; break; // "00 4F 00": Right arrow
+         case 0x0050:  charArray[0] = 0x11; break; // "00 50 00": Left arrow
+         case 0x004F:  charArray[0] = 0x12; break; // "00 4F 00": Right arrow
              
          // Lowercase letters (modifier = 0, keycodes 0x04 to 0x1D)
          case 0x0004:  charArray[0] = 'a'; break;
@@ -195,10 +195,6 @@
          case 0x0230:  charArray[0] = '}'; break;
          case 0x0231:  charArray[0] = '|'; break;
          case 0x0233:  charArray[0] = ':'; break;
-
-         //Left and right arrow key conflict management
-         case 0x0050:  charArray[0] = 0x11; break;
-         case 0x004F:  charArray[0] = 0x12; break;
 
          default:
              // If the keystate is unrecognized, return an empty string.
