@@ -171,15 +171,16 @@ int main()
           write(sockfd, combinedMessage, strlen(combinedMessage));
           
           /* Clear the input buffer and combined message buffer*/
-          memset(userArrayInput, 0, sizeof(userArrayInput));
+          memset(userArrayInput[0], 0, MAX_MESSAGE_LENGTH);
+          memset(userArrayInput[1], 0, MAX_MESSAGE_LENGTH);
           combinedMessage[0] = '\0';
 
-          /* Clear userArrayInput buffer */
-          for (int rows = 0; rows < 2; rows++) {
-            for (int cols = 0; cols < MAX_MESSAGE_LENGTH; cols++) {
-              userArrayInput[rows][cols] = '\0';
-            }
-          }
+          // /* Clear userArrayInput buffer */
+          // for (int rows = 0; rows < 2; rows++) {
+          //   for (int cols = 0; cols < MAX_MESSAGE_LENGTH; cols++) {
+          //     userArrayInput[rows][cols] = '\0';
+          //   }
+          // }
           
           /* Clear input area */
           clear_input();
