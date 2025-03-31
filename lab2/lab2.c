@@ -247,7 +247,6 @@ int main()
             /* Text wrapping logic */
             if (cursorHorizontalPosition >= total_cols) {
               if (cursorVerticalPosition < separator_row + 2) { /* Ensure within input rows */
-                userArrayInput[cursorVerticalPosition][cursorHorizontalPosition] = '\0';
                 cursorHorizontalPosition = 0;
                 cursorVerticalPosition++;
                 fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
