@@ -126,6 +126,13 @@ int main()
   pthread_create(&network_thread, NULL, network_thread_f, NULL);
 
   char userArrayInput[2][MAX_MESSAGE_LENGTH];
+  /* Clear this array */
+  for (int rows = 0; rows < 2; rows++) {
+    for (int cols = 0; cols < MAX_MESSAGE_LENGTH; cols++) {
+      userArrayInput[rows][cols] = '\0';
+    }
+  }
+  
   int cursorHorizontalPosition = 0;
   int cursorVerticalPosition = separator_row + 1; /* Start below the separator line */
 
