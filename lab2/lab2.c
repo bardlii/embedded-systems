@@ -212,7 +212,7 @@ int main()
         } else if (userTextInput[0] == '\0') { /* Ignore null character */
           continue;
 
-        } else if ((cursorHorizontalPosition > MAX_MESSAGE_LENGTH) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
+        } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
           continue;
 
         } else {
@@ -239,12 +239,15 @@ int main()
           //   }
           // }
 
-          /* Add character to array */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols) {
+          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols) { /* Stay within input display bounds */
+            /* Add character to array */
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
-            userArrayInput[0][MAX_MESSAGE_LENGTH - 1] = '\0'; // Ensure null-termination
-            userArrayInput[1][MAX_MESSAGE_LENGTH - 1] = '\0'; // Ensure null-termination
+            
+            /* Ensure null-termination */
+            userArrayInput[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+            userArrayInput[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+            fbputchar(' ', separator_row + 1, total_cols);
             
             printf("userArrayInput[0]: ");
             for (int col = 0; col <= MAX_MESSAGE_LENGTH+1; col++) {
