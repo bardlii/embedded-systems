@@ -181,6 +181,8 @@ int main()
           //     userArrayInput[rows][cols] = '\0';
           //   }
           // }
+          userArrayInput[0] = '\0';
+          userArrayInput[1] = '\0';
           
           /* Clear input area */
           clear_input();
