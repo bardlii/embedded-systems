@@ -177,8 +177,8 @@ int main()
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           //NOT AT THE BEGINNINGG
           if (cursorVerticalPosition >= separator_row + 1 && cursorHorizontalPosition > 0) {
-            for (int i = 0; i < strlen(inputString); i++) {
-              char currentChar = inputString[i];
+            for (int i = 0; i < strlen(userTextInput[i]); i++) {
+              char currentChar = userTextInput[i];
           
               // Append to the first row if it is not full
               if (strlen(userArrayInput[0]) < MAX_MESSAGE_LENGTH - 1) {
