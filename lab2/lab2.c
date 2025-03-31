@@ -216,30 +216,7 @@ int main()
         } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH - 1) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
           continue;
 
-        } else {
-          // /* Add character to array */
-          // userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
-          // printf("userArrayInput[0]: %s\n", userArrayInput[0]);
-          // printf("userArrayInput[1]: %s\n", userArrayInput[1]);
-          // printf("pos: (%d, %d)", cursorVerticalPosition, cursorHorizontalPosition);
-          
-          // /* Display character on screen */
-          // fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
-          // cursorHorizontalPosition++;
-
-          // /* Ensure cursor is displayed after the character */
-          // fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
-
-          // /* Text wrapping logic */
-          // if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
-          //   if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
-          //     userArrayInput[0][MAX_MESSAGE_LENGTH] = '\0'; /* Null terminate first row */
-          //     cursorHorizontalPosition = 0; /* Reset column position */
-          //     cursorVerticalPosition++; /* Move to the next row */
-          //     fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-          //   }
-          // }
-
+        } else { /* ASCII character pressed */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
           if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols) { /* Stay within input display bounds */
             /* Add character to array */
@@ -248,24 +225,6 @@ int main()
             /* Ensure null-termination */
             userArrayInput[0][MAX_MESSAGE_LENGTH - 1] = '\0';
             userArrayInput[1][MAX_MESSAGE_LENGTH - 1] = '\0';
-            
-            printf("userArrayInput[0]: ");
-            for (int col = 0; col <= MAX_MESSAGE_LENGTH+1; col++) {
-              if (userArrayInput[0][col] == '\0') printf("0");
-              printf("%c", userArrayInput[0][col]);
-            }
-            printf("\n");
-
-            printf("userArrayInput[1]: ");
-            for (int col = 0; col < MAX_MESSAGE_LENGTH; col++) {
-              if (userArrayInput[1][col] == '\0') printf("0");
-              printf("%c", userArrayInput[1][col]);
-            }
-            printf("\n");
-
-            printf("rowIndex: %d\n", rowIndex);
-            printf("total_cols: %d\n", total_cols);
-
           }
 
           /* Display character on screen */
@@ -429,6 +388,20 @@ void *network_thread_f(void *ignored)
       strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
       display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
     }
+
+    printf("display_msg[0]: ");
+    for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
+      if (display_msg[0][col] == '\0') printf("0");
+      printf("%c", display_msg[0][col]);
+    }
+    printf("\n");
+
+    printf("display_msg[1]: ");
+    for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
+      if (display_msg[1][col] == '\0') printf("0");
+      printf("%c", display_msg[1][col]);
+    }
+    printf("\n");
 
     /* Display message */
     add_message(display_msg);
