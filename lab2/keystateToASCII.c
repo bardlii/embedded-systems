@@ -170,6 +170,8 @@
          case 0x2025:  charArray[0] = '*'; break;
          case 0x2026:  charArray[0] = '('; break;
          case 0x2027:  charArray[0] = ')'; break;
+         case 0x2036:  charArray[0] = '<'; break; // Shift + ,
+         case 0x2037:  charArray[0] = '>'; break; // Shift + .
          case 0x202D:  charArray[0] = '_'; break;
          case 0x202E:  charArray[0] = '+'; break;
          case 0x202F:  charArray[0] = '{'; break;
@@ -189,6 +191,8 @@
          case 0x0225:  charArray[0] = '*'; break;
          case 0x0226:  charArray[0] = '('; break;
          case 0x0227:  charArray[0] = ')'; break;
+         case 0x0236:  charArray[0] = '<'; break; // Shift + ,
+         case 0x0237:  charArray[0] = '>'; break; // Shift + .
          case 0x022D:  charArray[0] = '_'; break;
          case 0x022E:  charArray[0] = '+'; break;
          case 0x022F:  charArray[0] = '{'; break;
