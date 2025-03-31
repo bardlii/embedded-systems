@@ -240,20 +240,20 @@ int main()
 
           /* Add character to array */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < MAX_MESSAGE_LENGTH) {
+          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < (MAX_MESSAGE_LENGTH - 1)) {
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
             userArrayInput[rowIndex][cursorHorizontalPosition + 1] = '\0'; // Ensure null-termination
             
             printf("userArrayInput[0]: ");
             for (int col = 0; col < MAX_MESSAGE_LENGTH; col++) {
-              if (userArrayInput[0][col] == '\0') printf("\\0");
+              if (userArrayInput[0][col] == '\0') printf("0");
               printf("%c", userArrayInput[0][col]);
             }
             printf("\n");
 
             printf("userArrayInput[1]: ");
             for (int col = 0; col < MAX_MESSAGE_LENGTH; col++) {
-              if (userArrayInput[0][col] == '\0') printf("\\0");
+              if (userArrayInput[0][col] == '\0') printf("0");
               printf("%c", userArrayInput[1][col]);
             }
             printf("\n");
