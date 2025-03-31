@@ -54,7 +54,6 @@ pthread_mutex_t message_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* Function prototypes */
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]);
-// void display_messages();
 void clear_display();
 void clear_input();
 
@@ -126,9 +125,15 @@ int main()
   pthread_create(&network_thread, NULL, network_thread_f, NULL);
 
   char userArrayInput[2][MAX_MESSAGE_LENGTH];
+  /* Clear this array */
+  for (int rows = 0; rows < 2; rows++) {
+    for (int cols = 0; cols < MAX_MESSAGE_LENGTH; cols++) {
+      userArrayInput[rows][cols] = '\0';
+    }
+  }
+
   int cursorHorizontalPosition = 0;
   int cursorVerticalPosition = separator_row + 1; /* Start below the separator line */
-  
   fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place initial cursor */  
   
   /* Look for and handle keypresses */
@@ -149,27 +154,17 @@ int main()
       if (userTextInput[0] != '\0') { /* Ignore null character, user hasn't pressed anything. */
 
         if (userTextInput[0] == '\n') { /* Enter key pressed */
-          /* Add message to display */
-          // char display_msg[MAX_MESSAGE_LENGTH];
-          // snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput[0]);
-          // add_message(userArrayInput);
-
           /* Combine both rows to send through socket */
-          char combinedMessage[MAX_MESSAGE_LENGTH * 2 + 2]; // Extra space for newline or null terminator
+          char combinedMessage[BUFFER_SIZE]; // Extra space for newline or null terminator
           snprintf(combinedMessage, sizeof(combinedMessage), "%s%s", userArrayInput[0], userArrayInput[1]);
           
           /* Send message to server*/
           write(sockfd, combinedMessage, strlen(combinedMessage));
           
-          /* Clear the input buffer */
-          memset(userArrayInput, 0, sizeof(userArrayInput));
-
-          /* Clear userArrayInput buffer */
-          for (int rows = 0; rows < 2; rows++) {
-            for (int cols = 0; cols < MAX_MESSAGE_LENGTH; cols++) {
-              userArrayInput[rows][cols] = '\0';
-            }
-          }
+          /* Clear the input buffer and combined message buffer*/
+          memset(userArrayInput[0], 0, MAX_MESSAGE_LENGTH);
+          memset(userArrayInput[1], 0, MAX_MESSAGE_LENGTH);
+          combinedMessage[0] = '\0';
           
           /* Clear input area */
           clear_input();
@@ -177,7 +172,7 @@ int main()
           /* Reset cursor position */
           cursorHorizontalPosition = 0;
           cursorVerticalPosition = separator_row + 1;
-          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           if (cursorHorizontalPosition > 0) {
@@ -243,42 +238,30 @@ int main()
         } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH - 1) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
           continue;
 
-        } else {
-          // /* Add character to array */
-          // userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
-          
-          // /* Display character on screen */
-          // fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
-          // cursorHorizontalPosition++;
-
-          // /* Ensure cursor is displayed after the character */
-          // fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
-
-          // /* Text wrapping logic */
-          // if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
-          //   if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
-          //     cursorHorizontalPosition = 0; /* Reset column position after prompt */
-          //     cursorVerticalPosition++; /* Move to the next row */
-          //     fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-          //   }
-          // }
-
-          /* Add character to array */
+        } else { /* ASCII character pressed */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          if (rowIndex >= 0 && rowIndex < 2) {
+          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols) { /* Stay within input display bounds */
+            /* Add character to array */
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
             
-            /* Display character on screen */
-            fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
-            cursorHorizontalPosition++;
+            /* Ensure null-termination */
+            userArrayInput[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+            userArrayInput[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+          }
 
-            /* Ensure cursor is displayed after the character */
+          /* Display character on screen */
+          fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
+          cursorHorizontalPosition++;
+
+          /* Ensure cursor is displayed after the character */
+          if (cursorHorizontalPosition < total_cols - 1) {
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
           }
+
           /* Text wrapping logic */
-          if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
+          if (cursorHorizontalPosition >= total_cols - 1) { /* Check if the current row is full */
             if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
-              cursorHorizontalPosition = 0; /* Reset column position after prompt */
+              cursorHorizontalPosition = 0; /* Reset column position */
               cursorVerticalPosition++; /* Move to the next row */
               fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
             }
@@ -297,43 +280,6 @@ int main()
   return 0;
 
 }
-
-// void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
-//   pthread_mutex_lock(&message_mutex);
-
-//   /* Shift all messages up by two positions to make room for new message */
-//   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
-//     strcpy(message_buffer[i], message_buffer[i + 2]);
-//   }
-  
-//   /* Add new message to buffer (two lines) */
-//   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
-//   message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
-  
-//   strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
-//   message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
-  
-//   /* Clear the display area */
-//   clear_display();
-  
-//   /* Display all messages in the buffer with text wrapping */
-//   for (int i = 0; i < MAX_MESSAGES; i++) {
-//         int row = i + 1; /* +1 to skip the top border row */
-//     if (row < separator_row) { /* Only display if row is above the separator */
-//       int col = 0;
-//       for (int j = 0; j < strlen(message_buffer[i]); j++) {
-//         if (col >= total_cols) { /* Wrap to the next row if the column limit is reached */
-//           row++;
-//           col = 0;
-//         }
-//         if (row >= separator_row) break; /* Stop if we exceed the display area */
-//         fbputchar(message_buffer[i][j], row, col++);
-//       }
-//     }
-//   }
-  
-//   pthread_mutex_unlock(&message_mutex);
-// }
 
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_lock(&message_mutex);
@@ -388,48 +334,51 @@ void clear_input(void) {
   }
 }
 
-void *network_thread_f(void *ignored) {
+void *network_thread_f(void *ignored)
+{
   char recvBuf[BUFFER_SIZE];
   int n;
 
-  /* Receive data */
-  // while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
-  //   recvBuf[n] = '\0';
-  //   printf("%s", recvBuf);
-    
-  //   /* Add prefix for received messages */
-  //   char display_msg[2][MAX_MESSAGE_LENGTH];
-  //   // snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
-  //   snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "%s", recvBuf);
-  //   snprintf(display_msg[1], MAX_MESSAGE_LENGTH, " ");
-
-  //   /* Display message*/
-  //   add_message(display_msg);
-  // }
   while ((n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0) {
     recvBuf[n] = '\0';
-    printf("%s", recvBuf);
+    printf("Received: %s\n", recvBuf);
 
+    if (n == BUFFER_SIZE - 1) { /* Check if the message exactly filled the buffer */
+      /* Discard any remaining data in this message */
+      char discardBuf[BUFFER_SIZE];
+      int discard_n;
+      
+      /* Use MSG_DONTWAIT to read non-blockingly until buffer is cleared */
+      while ((discard_n = recv(sockfd, discardBuf, BUFFER_SIZE - 1, MSG_DONTWAIT)) > 0) {
+        printf("Discarded %d additional bytes\n", discard_n);
+      }
+    }
+
+    /* Prepare message for display */
     char display_msg[2][MAX_MESSAGE_LENGTH];
+    
+    /* Clear display message buffer */
+    memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
+    memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
 
-    // Ensure the buffer is large enough to extract two messages
-    if (n >= MAX_MESSAGE_LENGTH * 2) {
+    /* Split received message into two display lines if needed */
+    if (strlen(recvBuf) <= MAX_MESSAGE_LENGTH - 1) {
+      /* Short message fits in first line */
       strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
       display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
-
-      strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH - 1);
-      display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+      /* Second line remains empty */
     } else {
-      // Handle case where the data is incomplete or malformed
+      /* Message needs to be split */
       strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
       display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
-      strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
+      
+      strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH - 1, MAX_MESSAGE_LENGTH - 1);
       display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
     }
 
     /* Display message */
     add_message(display_msg);
   }
+  
   return NULL;
 }
-
