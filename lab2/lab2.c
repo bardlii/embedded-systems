@@ -215,52 +215,55 @@ int main()
           continue;
 
         } else {
-          /* Add character to array */
-          userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
-          printf("userArrayInput[0]: %s\n", userArrayInput[0]);
-          printf("userArrayInput[1]: %s\n", userArrayInput[1]);
-          printf("pos: (%d, %d)", cursorVerticalPosition, cursorHorizontalPosition);
+          // /* Add character to array */
+          // userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
+          // printf("userArrayInput[0]: %s\n", userArrayInput[0]);
+          // printf("userArrayInput[1]: %s\n", userArrayInput[1]);
+          // printf("pos: (%d, %d)", cursorVerticalPosition, cursorHorizontalPosition);
           
+          // /* Display character on screen */
+          // fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
+          // cursorHorizontalPosition++;
+
+          // /* Ensure cursor is displayed after the character */
+          // fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+
+          // /* Text wrapping logic */
+          // if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
+          //   if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
+          //     userArrayInput[0][MAX_MESSAGE_LENGTH] = '\0'; /* Null terminate first row */
+          //     cursorHorizontalPosition = 0; /* Reset column position */
+          //     cursorVerticalPosition++; /* Move to the next row */
+          //     fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          //   }
+          // }
+
+          /* Add character to array */
+          int rowIndex = cursorVerticalPosition - (separator_row + 1);
+          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < MAX_MESSAGE_LENGTH) {
+            userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
+            userArrayInput[rowIndex][cursorHorizontalPosition + 1] = '\0'; // Ensure null-termination
+            printf("userArrayInput[0]: %s\n", userArrayInput[0]);
+            printf("userArrayInput[1]: %s\n", userArrayInput[1]);
+          }
+
           /* Display character on screen */
           fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
           cursorHorizontalPosition++;
 
           /* Ensure cursor is displayed after the character */
-          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+          if (cursorHorizontalPosition < total_cols) {
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+          }
 
           /* Text wrapping logic */
           if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
-            if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
-              userArrayInput[0][MAX_MESSAGE_LENGTH] = '\0'; /* Null terminate first row */
+            if (cursorVerticalPosition < separator_row + 1) { /* Ensure we don't exceed the input area */
               cursorHorizontalPosition = 0; /* Reset column position */
               cursorVerticalPosition++; /* Move to the next row */
               fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
             }
           }
-
-          // /* Add character to array */
-          // int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          // int colIndex = cursorHorizontalPosition - strlen("Enter text: ");
-
-          // if (rowIndex >= 0 && rowIndex < 2 && colIndex >= 0 && colIndex < MAX_MESSAGE_LENGTH - 1) {
-          //   userArrayInput[rowIndex][colIndex] = userTextInput[0];
-            
-          //   /* Display character on screen */
-          //   fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
-          //   cursorHorizontalPosition++;
-
-          //   /* Ensure cursor is displayed after the character */
-          //   fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
-
-          //   /* Text wrapping logic */
-          //   if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
-          //     if (cursorVerticalPosition < separator_row + 2) { /* Ensure we don't exceed the input area */
-          //       cursorHorizontalPosition = 0; /* Reset column position */
-          //       cursorVerticalPosition++; /* Move to the next row */
-          //       fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-          //     }
-          //   }
-          // }
         }
       }
     }
