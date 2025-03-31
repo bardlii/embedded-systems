@@ -177,26 +177,24 @@ int main()
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           //NOT AT THE BEGINNINGG
           if (cursorVerticalPosition >= separator_row + 1 && cursorHorizontalPosition > 0) {
-            cursorHorizontalPosition--;
-            // Shift any characters to the left
-            for (int i = cursorHorizontalPosition; i < MAX_MESSAGE_LENGTH; i++) {
-              // Shift characters in the first row
-              if (i < MAX_MESSAGE_LENGTH - 1) {
-                  userArrayInput[0][i] = userArrayInput[0][i + 1];
+            for (int i = 0; i < strlen(inputString); i++) {
+              char currentChar = inputString[i];
+          
+              // Append to the first row if it is not full
+              if (strlen(userArrayInput[0]) < MAX_MESSAGE_LENGTH - 1) {
+                  int firstRowIndex = strlen(userArrayInput[0]);
+                  userArrayInput[0][firstRowIndex] = currentChar;
+                  userArrayInput[0][firstRowIndex + 1] = '\0'; // Null-terminate the first row
+              } else if (strlen(userArrayInput[1]) < MAX_MESSAGE_LENGTH - 1) {
+                  int secondRowIndex = strlen(userArrayInput[1]);
+                  userArrayInput[1][secondRowIndex] = currentChar;
+                  userArrayInput[1][secondRowIndex + 1] = '\0'; // Null-terminate the second row
               } else {
-                  // Move the first character of the second row to the last position of the first row
-                  userArrayInput[0][i] = userArrayInput[1][0];
+                  // Both rows are full, ignore additional input or handle overflow
+                  printf("Input buffer is full. Cannot append more characters.\n");
+                  break;
               }
             }
-
-            // Shift characters in the second row
-            for (int i = 0; i < MAX_MESSAGE_LENGTH - 1; i++) {
-                userArrayInput[1][i] = userArrayInput[1][i + 1];
-            }
-
-            // Null-terminate both rows
-            userArrayInput[0][MAX_MESSAGE_LENGTH - 1] = '\0';
-            userArrayInput[1][MAX_MESSAGE_LENGTH - 1] = '\0';
           // SECOND LINE, AT BEGINNING
           } else if (cursorVerticalPosition > separator_row + 1 && cursorHorizontalPosition == 0) { /* Move to the previous row */
             cursorVerticalPosition--;
