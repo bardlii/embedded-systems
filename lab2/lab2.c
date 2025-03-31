@@ -179,9 +179,24 @@ int main()
           if (cursorVerticalPosition >= separator_row + 1 && cursorHorizontalPosition > 0) {
             cursorHorizontalPosition--;
             // Shift any characters to the left
-            for (int i = cursorHorizontalPosition; i < strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)]); i++) {
-              userArrayInput[cursorVerticalPosition - (separator_row + 1)][i] = userArrayInput[cursorVerticalPosition - (separator_row + 1)][i + 1];
-            } 
+            for (int i = cursorHorizontalPosition; i < MAX_MESSAGE_LENGTH; i++) {
+              // Shift characters in the first row
+              if (i < MAX_MESSAGE_LENGTH - 1) {
+                  userArrayInput[0][i] = userArrayInput[0][i + 1];
+              } else {
+                  // Move the first character of the second row to the last position of the first row
+                  userArrayInput[0][i] = userArrayInput[1][0];
+              }
+            }
+
+            // Shift characters in the second row
+            for (int i = 0; i < MAX_MESSAGE_LENGTH - 1; i++) {
+                userArrayInput[1][i] = userArrayInput[1][i + 1];
+            }
+
+            // Null-terminate both rows
+            userArrayInput[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+            userArrayInput[1][MAX_MESSAGE_LENGTH - 1] = '\0';
           // SECOND LINE, AT BEGINNING
           } else if (cursorVerticalPosition > separator_row + 1 && cursorHorizontalPosition == 0) { /* Move to the previous row */
             cursorVerticalPosition--;
@@ -192,7 +207,6 @@ int main()
           } else {
             continue;
           }
-          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
           
         } else if (packet.keycode[0] == 0x50) { /* Left arrow key pressed */
             int rowIndex = cursorVerticalPosition - (separator_row + 1);
