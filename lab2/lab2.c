@@ -352,68 +352,107 @@ void clear_input(void) {
   }
 }
 
+// void *network_thread_f(void *ignored)
+// {
+//   char recvBuf[BUFFER_SIZE];
+//   int n;
+
+//   while ((n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0) {
+//     recvBuf[n] = '\0';
+//     // printf("%s", recvBuf);
+//     printf("\n");
+
+//     char display_msg[2][MAX_MESSAGE_LENGTH]; /* Buffer for message going to be displayed */
+
+//     /* Clear display message buffer*/
+//     memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
+//     memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
+
+//     strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
+//     display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+
+//     strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH - 1, MAX_MESSAGE_LENGTH - 1);
+//     display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+
+//     printf("\n\nBefore adding msg: \n");
+//     printf("display_msg[0]: ");
+//     for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
+//       if (display_msg[0][col] == '\0') printf("0");
+//       printf("%c", display_msg[0][col]);
+//     }
+//     printf("\n");
+
+//     printf("display_msg[1]: ");
+//     for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
+//       if (display_msg[1][col] == '\0') printf("0");
+//       printf("%c", display_msg[1][col]);
+//     }
+//     printf("\n");
+
+//     /* Display message */
+//     add_message(display_msg);
+
+//     /* Clear display message buffer*/
+//     memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
+//     memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
+
+//     printf("\n\nAfter adding msg: \n");
+//     printf("display_msg[0]: ");
+//     for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
+//       if (display_msg[0][col] == '\0') printf("0");
+//       printf("%c", display_msg[0][col]);
+//     }
+//     printf("\n");
+
+//     printf("display_msg[1]: ");
+//     for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
+//       if (display_msg[1][col] == '\0') printf("0");
+//       printf("%c", display_msg[1][col]);
+//     }
+//     printf("\n\n\n");
+
+//   }
+  
+//   return NULL;
+
+// }
+
 void *network_thread_f(void *ignored)
 {
   char recvBuf[BUFFER_SIZE];
   int n;
 
-  /* Receive data */
-  // while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
-  //   recvBuf[n] = '\0';
-  //   printf("%s", recvBuf);
-    
-  //   /* Add prefix for received messages */
-  //   char display_msg[2][MAX_MESSAGE_LENGTH];
-  //   // snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "Them: %s", recvBuf);
-  //   snprintf(display_msg[0], MAX_MESSAGE_LENGTH, "%s", recvBuf);
-  //   snprintf(display_msg[1], MAX_MESSAGE_LENGTH, " ");
-
-  //   /* Display message*/
-  //   add_message(display_msg);
-  // }
   while ((n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0) {
     recvBuf[n] = '\0';
-    // printf("%s", recvBuf);
+    printf("%s", recvBuf);
     printf("\n");
 
     char display_msg[2][MAX_MESSAGE_LENGTH]; /* Buffer for message going to be displayed */
 
-    /* Clear display message buffer*/
-    memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
-    memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
+    // /* Clear display message buffer*/
+    // memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
+    // memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
 
     strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
     display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
 
     strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH - 1, MAX_MESSAGE_LENGTH - 1);
     display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
-    // // Handle case where the data is incomplete or malformed
-    // strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
-    // display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
-    // strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
-    // display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
-
-    printf("\n\nBefore adding msg: \n");
-    printf("display_msg[0]: ");
-    for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
-      if (display_msg[0][col] == '\0') printf("0");
-      printf("%c", display_msg[0][col]);
-    }
-    printf("\n");
-
-    printf("display_msg[1]: ");
-    for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
-      if (display_msg[1][col] == '\0') printf("0");
-      printf("%c", display_msg[1][col]);
-    }
-    printf("\n");
 
     /* Display message */
     add_message(display_msg);
 
-    /* Clear display message buffer*/
-    memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
-    memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
+    /* If data remains in the socket buffer, discard it */
+    if (n == BUFFER_SIZE - 1) {
+      char discardBuf[BUFFER_SIZE];
+      while (read(sockfd, discardBuf, BUFFER_SIZE) == BUFFER_SIZE) {
+        ;
+      }
+    }
+
+    // /* Clear display message buffer*/
+    // memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
+    // memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
 
     printf("\n\nAfter adding msg: \n");
     printf("display_msg[0]: ");
@@ -435,4 +474,3 @@ void *network_thread_f(void *ignored)
   return NULL;
 
 }
-
