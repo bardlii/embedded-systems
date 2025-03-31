@@ -303,9 +303,9 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
     strcpy(message_buffer[i], message_buffer[i + 2]);
   }
 
-  /* Clear message buffer area to be filled */
-  memset(message_buffer[MAX_MESSAGES - 2], 0, MAX_MESSAGE_LENGTH);
-  memset(message_buffer[MAX_MESSAGES - 1], 0, MAX_MESSAGE_LENGTH);
+  // /* Clear message buffer area to be filled */
+  // memset(message_buffer[MAX_MESSAGES - 2], 0, MAX_MESSAGE_LENGTH);
+  // memset(message_buffer[MAX_MESSAGES - 1], 0, MAX_MESSAGE_LENGTH);
 
   /* Add new messages to the buffer */
   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
