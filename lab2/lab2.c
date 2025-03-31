@@ -247,7 +247,6 @@ int main()
             /* Ensure null-termination */
             userArrayInput[0][MAX_MESSAGE_LENGTH - 1] = '\0';
             userArrayInput[1][MAX_MESSAGE_LENGTH - 1] = '\0';
-            fbputchar(' ', separator_row + 1, total_cols);
             
             printf("userArrayInput[0]: ");
             for (int col = 0; col <= MAX_MESSAGE_LENGTH+1; col++) {
