@@ -201,7 +201,7 @@ int main()
                 cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last character of the previous row, but not the null terminator
                 fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* editing last character of first row */
                 fbputchar('\n', cursorVerticalPosition, cursorHorizontalPosition+1); /* Place cursor on the 62nd index of display, but dont actually change the value of it in user array*/
-                printf('JUMP - Character to store after: %c\n', charAfter);
+                printf("JUMP - charAfter: %c\n", charAfter);
                 printf("Cursor final coordinates: %d, %d\n", cursorVerticalPosition, cursorHorizontalPosition);
                 printf("Final row index: %d\n", cursorVerticalPosition - (separator_row + 1));
               } else if (rowIndex == 0) { // null character infront, but you need to on the second to last character
@@ -210,7 +210,7 @@ int main()
                 fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition - 2); /* Restore the character on the first row, secodn to last column */
                 cursorHorizontalPosition--; // Move to 62nd index to edit
                 fbputchar('_', rowIndex, cursorHorizontalPosition); /* Place cursor on the 62nd index of display, but dont actually change the value of it in user array*/
-                printf('Edit 2nd to Last, Row 0  - Character to store after: %c\n', charAfter);
+                printf("61st Index, Row 0, charAfter %c\n", charAfter);
                 printf("Cursor final coordinates: %d, %d\n", cursorVerticalPosition, cursorHorizontalPosition);
                 printf("Final row index: %d\n", cursorVerticalPosition - (separator_row + 1));
               } 
@@ -220,8 +220,8 @@ int main()
                 fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character to the right of cursor */
                 cursorHorizontalPosition--; /* Move cursor left */
                 fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear pixel */
-                fbputchar("|", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-                printf('Regular - Character to store after: %c\n', charAfter);
+                fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+                printf("Reg, charAfter: %c\n", charAfter);
                 printf("Cursor final coordinates: %d, %d\n", cursorVerticalPosition, cursorHorizontalPosition);
                 printf("Final row index: %d\n", cursorVerticalPosition - (separator_row + 1));
             }  
