@@ -235,7 +235,7 @@ int main()
             }
           }
           
-        } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
+        } else if (userTextInput[0] == 0x11) { /* Left arrow key pressed */
           if (cursorHorizontalPosition == 0) { /* If at the left border */
             if (rowIndex == 1) { /* Second row */
               /* Put original character back */
@@ -263,7 +263,7 @@ int main()
             fbputchar('|', cursorVerticalPosition, --cursorHorizontalPosition);
           }
 
-        } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
+        } else if (userTextInput[0] == 0x12) { /* Right arrow key pressed */
           if (cursorHorizontalPosition == total_cols - 2) { /* If at the right border */
             if (rowIndex == 0 && userArrayInput[1][0] != '\0') { /* First row and there is a character in the second row */
               /* Put original character back */

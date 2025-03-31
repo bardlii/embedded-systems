@@ -160,6 +160,7 @@
 
          // Punctuation and common symbols with right shift (modifier = 0x20)
          case 0x2035:  charArray[0] = '~'; break;
+         case 0x201E:  charArray[0] = '!'; break;
          case 0x201F:  charArray[0] = '@'; break;
          case 0x2020:  charArray[0] = '#'; break;
          case 0x2021:  charArray[0] = '$'; break;
@@ -178,6 +179,7 @@
 
          // Punctuation and common symbols with left shift (modifier = 0x02)
          case 0x0235:  charArray[0] = '~'; break;
+         case 0x021E:  charArray[0] = '!'; break;
          case 0x021F:  charArray[0] = '@'; break;
          case 0x0220:  charArray[0] = '#'; break;
          case 0x0221:  charArray[0] = '$'; break;
@@ -193,6 +195,10 @@
          case 0x0230:  charArray[0] = '}'; break;
          case 0x0231:  charArray[0] = '|'; break;
          case 0x0233:  charArray[0] = ':'; break;
+
+         //Left and right arrow key conflict management
+         case 0x0050:  charArray[0] = 0x11; break;
+         case 0x004F:  charArray[0] = 0x12; break;
 
          default:
              // If the keystate is unrecognized, return an empty string.
