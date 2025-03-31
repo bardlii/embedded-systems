@@ -178,23 +178,36 @@ int main()
           fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
-          if (cursorHorizontalPosition > strlen("Enter text: ")) {
+          if (cursorHorizontalPosition > 0) {
             cursorHorizontalPosition--;
             userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
             fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
           }
           
         } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
-          if (cursorHorizontalPosition > strlen("Enter text: ")) {
+          if (cursorHorizontalPosition > 0) { 
             cursorHorizontalPosition--;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+            //shift other characters to the right by one position so that the cursor is to the left of the character
+            for (int i = cursorHorizontalPosition; i < strlen(userArrayInput[0]); i++) {
+              userArrayInput[cursorVerticalPosition - (separator_row + 1)][i] = userArrayInput[cursorVerticalPosition - (separator_row + 1)][i + 1];
+            }
+            userArrayInput[cursorVerticalPosition - (separator_row + 1)][strlen(userArrayInput[0])] = '\0'; /* Null terminate the string */
+          } else {
+            continue;
           }
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-          if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput[0])) {
+          if ((cursorHorizontalPosition >= 0) && (cursorHorizontalPosition < total_cols - 1)) {
+            if (userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] == '\0') {
+            //Restore previous characters
+            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition); //
             cursorHorizontalPosition++;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+            } else {
+              continue;
+            }
           }
 
         } else if (userTextInput[0] == '\0') { /* Ignore null character */
@@ -299,8 +312,7 @@ void clear_input(void) {
   }
 }
 
-void *network_thread_f(void *ignored)
-{
+void *network_thread_f(void *ignored) {
   char recvBuf[BUFFER_SIZE];
   int n;
 
