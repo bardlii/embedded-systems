@@ -246,7 +246,7 @@ int main()
             userArrayInput[rowIndex][cursorHorizontalPosition + 1] = '\0'; // Ensure null-termination
             
             printf("userArrayInput[0]: ");
-            for (int col = 0; col =< MAX_MESSAGE_LENGTH; col++) {
+            for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
               if (userArrayInput[0][col] == '\0') printf("0");
               printf("%c", userArrayInput[0][col]);
             }
