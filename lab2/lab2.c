@@ -377,7 +377,7 @@ void *network_thread_f(void *ignored)
     strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
     display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
 
-    strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH - 1);
+    strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH - 1, MAX_MESSAGE_LENGTH - 1);
     display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
     // // Handle case where the data is incomplete or malformed
     // strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
