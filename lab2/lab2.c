@@ -177,11 +177,61 @@ int main()
           fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
-          if (cursorHorizontalPosition > 0) {
-            cursorHorizontalPosition--;
-            userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
-            fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+          if (cursorHorizontalPosition == 0) { /* If at the left border */
+            if (rowIndex == 1) { /* Second row */
+              /* Go back to end of first row */
+              cursorHorizontalPosition = total_cols - 2;
+              cursorVerticalPosition = separator_row + 1;
+
+              /* Place cursor char */
+              fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+              
+              /* Replace original character with first char of lower row*/
+              userArrayInput[rowIndex][cursorHorizontalPosition] = userArrayInput[1][0];
+              
+              /* Shift bottom row characters left in display and buffer */
+              for (int i = 0; i < total_cols - 1; i++) {
+                if (userArrayInput[1][i + 1] != '\0') {
+                  fbputchar(userArrayInput[1][i + 1], separator_row + 2, i);
+                } else {
+                  fbputchar(' ', separator_row + 2, i);
+                }
+                userArrayInput[1][i] = userArrayInput[1][i + 1];
+              }
+            }
+          
+          } else {
+            /* Shift characters to the right of the cursor left */
+            for (int i = cursorHorizontalPosition; i < total_cols - 1; i++) {
+              if (userArrayInput[rowIndex][i + 1] != '\0') {
+                fbputchar(userArrayInput[rowIndex][i + 1], separator_row + rowIndex + 1, i);
+              } else {
+                fbputchar(' ', separator_row + rowIndex + 1, i);
+              }
+              userArrayInput[rowIndex][i] = userArrayInput[rowIndex][i + 1];
+            }
+            /* Place cursor char */
+            fbputchar('|', cursorVerticalPosition, --cursorHorizontalPosition);
+            
+            if (rowIndex == 0) { /* On first row */
+              /* Replace last character in first row with first char of lower row*/
+              userArrayInput[0][MAX_MESSAGE_LENGTH - 2] = userArrayInput[1][0];
+              if (userArrayInput[0][MAX_MESSAGE_LENGTH - 2] != '\0') {
+                fbputchar(userArrayInput[0][MAX_MESSAGE_LENGTH - 2], separator_row + 1, total_cols - 2);
+              } else {
+                fbputchar(' ', separator_row + 1, total_cols - 2);
+              }
+
+              /* Shift bottom row characters left in display and buffer */
+              for (int i = 0; i < total_cols - 1; i++) {
+                if (userArrayInput[1][i + 1] != '\0') {
+                  fbputchar(userArrayInput[1][i + 1], separator_row + 2, i);
+                } else {
+                  fbputchar(' ', separator_row + 2, i);
+                }
+                userArrayInput[1][i] = userArrayInput[1][i + 1];
+              }
+            }
           }
           
         } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
