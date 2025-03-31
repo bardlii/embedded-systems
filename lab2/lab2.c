@@ -353,7 +353,6 @@ void *network_thread_f(void *ignored)
 {
   char recvBuf[BUFFER_SIZE];
   int n;
-  char display_msg[2][MAX_MESSAGE_LENGTH];
 
   /* Receive data */
   // while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
@@ -373,6 +372,8 @@ void *network_thread_f(void *ignored)
     recvBuf[n] = '\0';
     printf("%s", recvBuf);
     printf("\n");
+
+    char display_msg[2][MAX_MESSAGE_LENGTH]; /* Buffer for message going to be displayed */
 
     strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
     display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
