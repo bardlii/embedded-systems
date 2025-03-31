@@ -192,65 +192,46 @@ int main()
           }
           
         } else if (packet.keycode[0] == 0x50) { /* Left arrow key pressed */
-          int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          char previousChar;
-
-          if (rowIndex == 0 && cursorHorizontalPosition == 0) {
-            // Do nothing, already at the start of the first row
-            continue;
-          } else if (rowIndex == 1 && cursorHorizontalPosition == 0) {
-            // Move to the last character of the first row
-            cursorVerticalPosition--; // Move to the first row
-            previousChar = userArrayInput[1][0];
-            cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 1; // Move to the last character of the first row
-            fbputchar(previousChar, 1, 0); /* Restore the previous character on the second row, first column */
-            fbputchar("|", 0, cursorHorizontalPosition); /* Place cursor */
-          } else if (cursorHorizontalPosition > 0) {
-            // Move left within the same row
-            cursorHorizontalPosition--;
-            previousChar = userArrayInput[rowIndex][cursorHorizontalPosition];
-            fbputchar("|", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-            fbputchar(previousChar, cursorVerticalPosition, cursorHorizontalPosition+1); /* Restore the previous character to the right */
-          } 
-      
-        } else if (packet.keycode[0] == 0x50) { /* Left arrow key pressed */
             int rowIndex = cursorVerticalPosition - (separator_row + 1);
-            char previousChar = userArrayInput[rowIndex][cursorHorizontalPosition - 1];
+            char previousChar;
 
-            fbputchar(previousChar, cursorVerticalPosition, cursorHorizontalPosition - 1); /* Restore the previous character */
-            cursorHorizontalPosition--; /* Move cursor left */
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-            fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition - 1); /* Clear the next character */
-
-
-
-          } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-            int currentLineLength = strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)]);
-            if (cursorHorizontalPosition < currentLineLength) { // Move right within the same row */
-            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
-            cursorHorizontalPosition++;
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-          } else if (cursorVerticalPosition < separator_row + 2) { /* Move to the next row */
-            cursorVerticalPosition++;
-            cursorHorizontalPosition = 0; /* Move to the start of the next row */
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-          }
-
+            // If at null character of the second line, continue to the next displayable character of the first line
+            // if (userArrayInput[rowIndex][cursorHorizontalPosition] == '\0') {
+              // cursorHorizontalPosition = userArrayInput[rowIndex][cursorHorizontalPosition - 1]; /* Move to the next character */
+              // continue;
+            // } else 
+            
+            
+            if (rowIndex == 0 && cursorHorizontalPosition == 0) {
+              // Do nothing, already at the start of the first row
+              continue;
+            } else if (rowIndex == 1 && cursorHorizontalPosition == 0) {
+              // Move to the last character of the first row
+              cursorVerticalPosition--; // Move to the first row
+              previousChar = userArrayInput[1][0];
+              cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last character of the first row, but not the null terminator
+              fbputchar(previousChar, 1, 0); /* Restore the previous character on the second row, first column */
+              fbputchar("|", 0, cursorHorizontalPosition+1); /* Place cursor on the 63rd index of display, but dont actually change the value of it in user array*/
+            } else if (cursorHorizontalPosition > 0) {
+              // Move left within the same row
+              cursorHorizontalPosition--;
+              previousChar = userArrayInput[rowIndex][cursorHorizontalPosition];
+              fbputchar("|", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+              fbputchar(previousChar, cursorVerticalPosition, cursorHorizontalPosition+1); /* Restore the previous character to the right */
+            } 
+        
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-          // Check that we are not at the last column and that the next character is present.
-          if (cursorHorizontalPosition < total_cols - 1 && userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition + 1] != '\0') {
+            // Check that we are not at the last column and that the next character is present.
+            if (cursorHorizontalPosition < total_cols - 1 && userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition + 1] != '\0') {
             // Restore the original character at the current cursor position, in case the cursor indicator was drawn
             fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
             // Move the cursor one position to the right
             cursorHorizontalPosition++;
             // Draw the cursor indicator at the new position
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
-          } else {
+            } else {
             continue; // Ignore if at the end of the line
-          }
-
-        } else if (userTextInput[0] == '\0') { /* Ignore null character */ //DELETE, UNNECESSARY?
-          continue;
+            }
 
         } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH - 1) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
           continue;
