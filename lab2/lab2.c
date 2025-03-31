@@ -213,7 +213,8 @@ int main()
                 charAfter = userArrayInput[rowIndex][cursorHorizontalPosition];
                 fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character to the right of cursor */
                 cursorHorizontalPosition--; /* Move cursor left */
-                fbputchar("_", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+                fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear pixel */
+                fbputchar("|", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
             }  
         
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
