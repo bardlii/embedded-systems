@@ -212,7 +212,7 @@ int main()
         } else if (userTextInput[0] == '\0') { /* Ignore null character */
           continue;
 
-        } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH - 1) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
+        } else if ((cursorHorizontalPosition >= MAX_MESSAGE_LENGTH) && (cursorVerticalPosition == separator_row + 2)) { /* Ignore input if buffer is full */
           continue;
 
         } else {
@@ -241,9 +241,9 @@ int main()
 
           /* Add character to array */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < (MAX_MESSAGE_LENGTH - 1)) {
+          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < MAX_MESSAGE_LENGTH) {
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
-            userArrayInput[rowIndex][cursorHorizontalPosition + 1] = '\0'; // Ensure null-termination
+            // userArrayInput[rowIndex][cursorHorizontalPosition + 1] = '\0'; // Ensure null-termination
             
             printf("userArrayInput[0]: ");
             for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
@@ -259,7 +259,9 @@ int main()
             }
             printf("\n");
 
-            printf("%d\n", rowIndex);
+            printf("rowIndex: %d\n", rowIndex);
+            printf("total_cols: %d\n", total_cols);
+
           }
 
           /* Display character on screen */
