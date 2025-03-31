@@ -241,7 +241,7 @@ int main()
 
           /* Add character to array */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols) {
+          if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols - 1) {
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
             userArrayInput[rowIndex][cursorHorizontalPosition + 1] = '\0'; // Ensure null-termination
             
