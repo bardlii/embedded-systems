@@ -192,6 +192,28 @@ int main()
           }
           
         } else if (packet.keycode[0] == 0x50) { /* Left arrow key pressed */
+          int rowIndex = cursorVerticalPosition - (separator_row + 1);
+          char previousChar;
+
+          if (rowIndex == 0 && cursorHorizontalPosition == 0) {
+            // Do nothing, already at the start of the first row
+            continue;
+          } else if (rowIndex == 1 && cursorHorizontalPosition == 0) {
+            // Move to the last character of the first row
+            cursorVerticalPosition--; // Move to the first row
+            previousChar = userArrayInput[1][0];
+            cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 1; // Move to the last character of the first row
+            fbputchar(previousChar, 1, 0); /* Restore the previous character on the second row, first column */
+            fbputchar("|", 0, cursorHorizontalPosition); /* Place cursor */
+          } else if (cursorHorizontalPosition > 0) {
+            // Move left within the same row
+            cursorHorizontalPosition--;
+            previousChar = userArrayInput[rowIndex][cursorHorizontalPosition];
+            fbputchar("|", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+            fbputchar(previousChar, cursorVerticalPosition, cursorHorizontalPosition+1); /* Restore the previous character to the right */
+          } 
+      
+        } else if (packet.keycode[0] == 0x50) { /* Left arrow key pressed */
             int rowIndex = cursorVerticalPosition - (separator_row + 1);
             char previousChar = userArrayInput[rowIndex][cursorHorizontalPosition - 1];
 
