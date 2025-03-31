@@ -177,8 +177,8 @@ int main()
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
           //NOT AT THE BEGINNINGG
           if (cursorVerticalPosition >= separator_row + 1 && cursorHorizontalPosition > 0) {
-            for (int i = 0; i < strlen(userTextInput[i]); i++) {
-              char currentChar = userTextInput[i];
+            for (int i = 0; i < strlen(userArrayInput[i]); i++) {
+              char currentChar = userArrayInput[cursorVerticalPosition - (separator_row + 1)][i];
           
               // Append to the first row if it is not full
               if (strlen(userArrayInput[0]) < MAX_MESSAGE_LENGTH - 1) {
@@ -191,8 +191,7 @@ int main()
                   userArrayInput[1][secondRowIndex + 1] = '\0'; // Null-terminate the second row
               } else {
                   // Both rows are full, ignore additional input or handle overflow
-                  printf("Input buffer is full. Cannot append more characters.\n");
-                  break;
+                  continue;
               }
             }
           // SECOND LINE, AT BEGINNING
