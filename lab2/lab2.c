@@ -175,41 +175,83 @@ int main()
           fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
-          if (cursorHorizontalPosition > 0) {
+          //NOT AT THE BEGINNINGG
+          if (cursorVerticalPosition >= separator_row + 1 && cursorHorizontalPosition > 0) {
             cursorHorizontalPosition--;
             // Shift any characters to the left
-            for (int i = cursorHorizontalPosition; i < strlen(userArrayInput[0]); i++) {
+            for (int i = cursorHorizontalPosition; i < strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)]); i++) {
               userArrayInput[cursorVerticalPosition - (separator_row + 1)][i] = userArrayInput[cursorVerticalPosition - (separator_row + 1)][i + 1];
-            }
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); 
+            } 
+          // SECOND LINE, AT BEGINNING
+          } else if (cursorVerticalPosition > separator_row + 1 && cursorHorizontalPosition == 0) { /* Move to the previous row */
+            cursorVerticalPosition--;
+            cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; /* Move to the last editable character column (62nd index) */
+            for (int i = MAX_MESSAGE_LENGTH - 1; i < strlen(userArrayInput[1]); i++) {
+              userArrayInput[cursorVerticalPosition - (separator_row + 1)][i] = userArrayInput[cursorVerticalPosition - (separator_row + 1)][i + 1];
+            } 
           } else {
             continue;
           }
+          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
           
         } else if (packet.keycode[0] == 0x50) { /* Left arrow key pressed */
             int rowIndex = cursorVerticalPosition - (separator_row + 1);
-            char charAfter;
+            char charFormer[userArrayInput[cursorVerticalPosition][cursorHorizontalPosition]];
+            char charLatter;
 
+            //EDITING FIRST CHARACTER IN A LINE
+            if (cursorHorizontalPosition == 0) {
+              continue;
+              //FIRST LINE
+              if (rowIndex == 0) {
+                //DONT MOVE
+                continue;
+              //SECOND LINE
+              } else if (rowIndex == 1) { // IN ORDER TO SKIP THE \N
+                //JUMP TO FIRST CHARACTER OF FIRST LINE
+                cursorVerticalPosition = 0; // Move to the first line, row index becomes 0 on next iteration
+                cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last editable character column (62nd index)
+                charLatter = userArrayInput[cursorVerticalPosition][cursorHorizontalPosition]; //charLatter itself
+                fbputchar(charLatter, cursorVerticalPosition, cursorHorizontalPosition); // Place cursor on the 62nd index of display, but dont actually change the value of it in user array
+            //NORMAL KEYPRESS AS IN CURSOR HORIZONTAL POSITION IS GREATHER THAN 0 AND NOT 
+              }
+            } (cursorHorizontalPosition > 0 && rowIndex == 0) { //REGULAR KEY PRESS
+              // IF ITS NULL ON FIRST LINE --> DECREASE CURSOR HORIZONTAL POSITION BY 1
+              if (charFormer == '\0') {
+                cursorHorizontalPosition--;
+                charLatter = userArrayInput[cursorVerticalPosition][cursorHorizontalPosition]; //charLatter itself, first letter of second column
+                fbputchar(charLatter, cursorVerticalPosition, cursorHorizontalPosition); // 
+              } else if (charFormer != '\0' && rowIndex == 1) { //MAX CHARACTERS
+
+              }
+              
+            } 
+            charLatter = userArrayInput[cursorVerticalPosition][cursorHorizontalPosition];
+            fbputchar(())
+
+
+
+            /*
             // IS IT A NULL CHARACTER?
             if (userArrayInput[rowIndex][cursorHorizontalPosition] == '\0') {
               if (rowIndex > 0) {
                 // Store character on first column of second row
                 cursorHorizontalPosition = 0;
                 charAfter = userArrayInput[rowIndex][cursorHorizontalPosition]; //charAfter itself
-                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character on the second row, first column */
+                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character on the second row, first column
                 cursorVerticalPosition--; // Move to the previous row
                 cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last character of the previous row, but not the null terminator
-                fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* editing last character of first row */
-                fbputchar('\n', cursorVerticalPosition, cursorHorizontalPosition+1); /* Place cursor on the 62nd index of display, but dont actually change the value of it in user array*/
+                fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* editing last character of first row
+                fbputchar('\n', cursorVerticalPosition, cursorHorizontalPosition+1); /* Place cursor on the 62nd index of display, but dont actually change the value of it in user array
                 printf("JUMP - charAfter: %c\n", charAfter);
                 printf("Cursor final coordinates: %d, %d\n", cursorVerticalPosition, cursorHorizontalPosition);
                 printf("Final row index: %d\n", cursorVerticalPosition - (separator_row + 1));
-              } else if (rowIndex == 0) { // null character infront, but you need to on the second to last character
+              } else if (rowIndex == 0 && cursorHorizontalPosition > 0) { // null character infront, but you need to on the second to last character
                 //LAST CHARACTER OF FIRST ROW
                 charAfter = userArrayInput[rowIndex][cursorHorizontalPosition - 2];
-                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition - 2); /* Restore the character on the first row, secodn to last column */
+                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition - 2); /* Restore the character on the first row, secodn to last column 
                 cursorHorizontalPosition--; // Move to 62nd index to edit
-                fbputchar('_', rowIndex, cursorHorizontalPosition); /* Place cursor on the 62nd index of display, but dont actually change the value of it in user array*/
+                fbputchar('_', rowIndex, cursorHorizontalPosition); /* Place cursor on the 62nd index of display, but dont actually change the value of it in user array
                 printf("61st Index, Row 0, charAfter %c\n", charAfter);
                 printf("Cursor final coordinates: %d, %d\n", cursorVerticalPosition, cursorHorizontalPosition);
                 printf("Final row index: %d\n", cursorVerticalPosition - (separator_row + 1));
@@ -217,14 +259,15 @@ int main()
               
             } else if (cursorHorizontalPosition > 0) { // REGULAR
                 charAfter = userArrayInput[rowIndex][cursorHorizontalPosition];
-                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character to the right of cursor */
-                cursorHorizontalPosition--; /* Move cursor left */
-                fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear pixel */
-                fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character to the right of cursor 
+                cursorHorizontalPosition--; /* Move cursor left 
+                fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear pixel 
+                fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor 
                 printf("Reg, charAfter: %c\n", charAfter);
                 printf("Cursor final coordinates: %d, %d\n", cursorVerticalPosition, cursorHorizontalPosition);
                 printf("Final row index: %d\n", cursorVerticalPosition - (separator_row + 1));
             }  
+            */
         
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
             // Check that we are not at the last column and that the next character is present.
