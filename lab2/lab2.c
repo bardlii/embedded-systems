@@ -193,18 +193,19 @@ int main()
           }
           
         } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
-          if (cursorHorizontalPosition > 0) { 
+            if (cursorHorizontalPosition > 0) { 
             fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition); // Restore previous character
             cursorHorizontalPosition--;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-          } else if (cursorVerticalPosition > separator_row + 1) { /* Move to the previous row */
+            } else if (cursorVerticalPosition > separator_row + 1) { /* Move to the previous row */
             cursorVerticalPosition--;
             cursorHorizontalPosition = strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)]); /* Move to the end of the previous row */
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-          }
-        } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-          if (cursorHorizontalPosition < strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)])) {
-            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition); // Restore previous character
+            }
+          } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
+            int currentLineLength = strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)]);
+            if (cursorHorizontalPosition < currentLineLength) {
+            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
             cursorHorizontalPosition++;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
           } else if (cursorVerticalPosition < separator_row + 2) { /* Move to the next row */
