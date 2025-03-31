@@ -194,11 +194,23 @@ int main()
           
         } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
           if (cursorHorizontalPosition > 0) { 
-            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition); //Restore previous characters
+            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition); // Restore previous character
             cursorHorizontalPosition--;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-          } else {
-            continue;
+          } else if (cursorVerticalPosition > separator_row + 1) { /* Move to the previous row */
+            cursorVerticalPosition--;
+            cursorHorizontalPosition = strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)]); /* Move to the end of the previous row */
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          }
+        } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
+          if (cursorHorizontalPosition < strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)])) {
+            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition); // Restore previous character
+            cursorHorizontalPosition++;
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          } else if (cursorVerticalPosition < separator_row + 2) { /* Move to the next row */
+            cursorVerticalPosition++;
+            cursorHorizontalPosition = 0; /* Move to the start of the next row */
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
           }
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
