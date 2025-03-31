@@ -226,7 +226,7 @@ int main()
               fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
             }
           
-          } else if (userArrayInput[rowIndex][cursorHorizontalPosition + 1] != '\0') { /* Not at end of input */
+          } else if (userArrayInput[rowIndex][cursorHorizontalPosition] != '\0') { /* Not at end of input */
             /* Put original character back */
             fbputchar(userArrayInput[rowIndex][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
 
