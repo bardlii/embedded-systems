@@ -194,8 +194,12 @@ int main()
             // }
             // userArrayInput[cursorVerticalPosition - (separator_row + 1)][strlen(userArrayInput[0])] = '\0'; /* Null terminate the string */
             if (rowIndex == 1) { /* Second row */
-              /* Put original character back*/
-              fbputchar(userArrayInput[cursorVerticalPosition][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
+              /* Put original character back */
+              if (userArrayInput[rowIndex][cursorHorizontalPosition] != '\0') {
+                fbputchar(userArrayInput[rowIndex][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
+              } else {
+                fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition);
+              }
               /* Go back to end of first row */
               cursorHorizontalPosition = total_cols - 1;
               cursorVerticalPosition = separator_row + 1;
@@ -205,10 +209,14 @@ int main()
             }
           
           } else {
-            /* Put original character back*/
-            fbputchar(userArrayInput[cursorVerticalPosition][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
+            /* Put original character back */
+            if (userArrayInput[rowIndex][cursorHorizontalPosition] != '\0') {
+              fbputchar(userArrayInput[rowIndex][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
+            } else {
+              fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition);
+            }
             /* Place cursor char */
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition--);
+            fbputchar('|', cursorVerticalPosition, --cursorHorizontalPosition);
           }
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
