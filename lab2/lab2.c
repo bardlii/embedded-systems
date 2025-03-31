@@ -201,7 +201,7 @@ int main()
                 fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition);
               }
               /* Go back to end of first row */
-              cursorHorizontalPosition = total_cols - 1;
+              cursorHorizontalPosition = total_cols - 2;
               cursorVerticalPosition = separator_row + 1;
 
               /* Place cursor char */
