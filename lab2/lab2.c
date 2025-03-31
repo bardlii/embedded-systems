@@ -152,6 +152,8 @@ int main()
 
       char *userTextInput = keystateToASCII(keystate);
       if (userTextInput[0] != '\0') { /* Ignore null character, user hasn't pressed anything. */
+        /* Calculate index with respect to display area */
+        int rowIndex = cursorVerticalPosition - (separator_row + 1);
 
         if (userTextInput[0] == '\n') { /* Enter key pressed */
           /* Combine both rows to send through socket */
@@ -183,16 +185,30 @@ int main()
           }
           
         } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
-          if (cursorHorizontalPosition > 0) { 
-            cursorHorizontalPosition--;
-            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-            //shift other characters to the right by one position so that the cursor is to the left of the character
-            for (int i = cursorHorizontalPosition; i < strlen(userArrayInput[0]); i++) {
-              userArrayInput[cursorVerticalPosition - (separator_row + 1)][i] = userArrayInput[cursorVerticalPosition - (separator_row + 1)][i + 1];
+          if (cursorHorizontalPosition == 0) { /* If at the left border */
+            // cursorHorizontalPosition--;
+            // fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+            // //shift other characters to the right by one position so that the cursor is to the left of the character
+            // for (int i = cursorHorizontalPosition; i < strlen(userArrayInput[0]); i++) {
+            //   userArrayInput[cursorVerticalPosition - (separator_row + 1)][i] = userArrayInput[cursorVerticalPosition - (separator_row + 1)][i + 1];
+            // }
+            // userArrayInput[cursorVerticalPosition - (separator_row + 1)][strlen(userArrayInput[0])] = '\0'; /* Null terminate the string */
+            if (rowIndex == 1) { /* Second row */
+              /* Put original character back*/
+              fbputchar(userArrayInput[cursorVerticalPosition][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
+              /* Go back to end of first row */
+              cursorHorizontalPosition = total_cols - 1;
+              cursorVerticalPosition = separator_row + 1;
+
+              /* Place cursor char */
+              fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
             }
-            userArrayInput[cursorVerticalPosition - (separator_row + 1)][strlen(userArrayInput[0])] = '\0'; /* Null terminate the string */
+          
           } else {
-            continue;
+            /* Put original character back*/
+            fbputchar(userArrayInput[cursorVerticalPosition][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
+            /* Place cursor char */
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition--);
           }
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
@@ -214,7 +230,6 @@ int main()
           continue;
 
         } else { /* ASCII character pressed */
-          int rowIndex = cursorVerticalPosition - (separator_row + 1);
           if (rowIndex >= 0 && rowIndex < 2 && cursorHorizontalPosition < total_cols) { /* Stay within input display bounds */
             /* Add character to array */
             userArrayInput[rowIndex][cursorHorizontalPosition] = userTextInput[0];
