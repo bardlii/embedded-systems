@@ -407,6 +407,21 @@ void *network_thread_f(void *ignored)
   memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
   memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
 
+  printf("do we reach here?\n\n");
+  printf("display_msg[0]: ");
+    for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
+      if (display_msg[0][col] == '\0') printf("0");
+      printf("%c", display_msg[0][col]);
+    }
+    printf("\n");
+
+    printf("display_msg[1]: ");
+    for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
+      if (display_msg[1][col] == '\0') printf("0");
+      printf("%c", display_msg[1][col]);
+    }
+    printf("\n\n");
+
   return NULL;
 }
 
