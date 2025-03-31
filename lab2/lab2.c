@@ -217,7 +217,8 @@ int main()
         } else {
           /* Add character to array */
           userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
-          printf("pos: (%d, %d)", cursorVerticalPosition, cursorHorizontalPosition);
+          printf("userArrayInput[0]: %s\n", userArrayInput[0]);
+          printf("userArrayInput[1]: %s\n", userArrayInput[1]);
           
           /* Display character on screen */
           fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
