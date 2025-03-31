@@ -195,35 +195,35 @@ int main()
             int rowIndex = cursorVerticalPosition - (separator_row + 1);
             char charAfter;
 
-            // If at null character of the second line, continue to the next displayable character of the first line
-            // if (userArrayInput[rowIndex][cursorHorizontalPosition] == '\0') {
-              // cursorHorizontalPosition = userArrayInput[rowIndex][cursorHorizontalPosition - 1]; /* Move to the next character */
-              // continue;
-            // } else 
-            
-            
-            if (rowIndex == 0 && cursorHorizontalPosition == 0) {
+            // Null character at first row, first line
+            if ((rowIndex == 0) && (userArrayInput[rowIndex][cursorHorizontalPosition] == '\0')) {
+              fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear the current character */
+              continue;
+            // Start of first row with character
+            } else if (rowIndex == 0 && cursorHorizontalPosition == 0) {
               // Do nothing, already at the start of the first row
               continue;
             } else if (rowIndex > 0 && cursorHorizontalPosition == 0) {
-                // Move to the last character of the first row
-                cursorVerticalPosition--; // Move to the first row
-                charAfter = userArrayInput[1][0];
-                cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last character of the first row, but not the null terminator
-                fbputchar(charAfter, 1, 0); /* Restore the previous character on the second row, first column */
-                fbputchar("_", 0, cursorHorizontalPosition+1); /* Place cursor on the 63rd index of display, but dont actually change the value of it in user array*/
-                printf("Left arrow pressed, cursor at (%d, %d)\n", cursorHorizontalPosition, cursorVerticalPosition);
-                printf("Previous character: %c\n", charAfter);
-                printf("Current character: %c\n", userArrayInput[rowIndex][cursorHorizontalPosition]);
+              // Move to the last character of the first row
+              cursorVerticalPosition--; // Move to the first row
+              charAfter = userArrayInput[1][0];
+              cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 2; // Move to the last character of the first row, but not the null terminator
+              fbputchar(charAfter, 1, 0); /* Restore the previous character on the second row, first column */
+              fbputchar("_", 0, cursorHorizontalPosition+1); /* Place cursor on the 63rd index of display, but dont actually change the value of it in user array*/
+              printf("Left arrow pressed, cursor at (%d, %d)\n", cursorHorizontalPosition, cursorVerticalPosition);
+              printf("Character after: %c\n", charAfter);
+              printf("Current character to edit: %c\n", userArrayInput[rowIndex][cursorHorizontalPosition]);
+              // Move left within the same row
             } else if (cursorHorizontalPosition > 0) {
                 // Move left within the same row
-                cursorHorizontalPosition--;
                 charAfter = userArrayInput[rowIndex][cursorHorizontalPosition];
+                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition); /* Restore the character to the right of cursor */
+                cursorHorizontalPosition--; /* Move cursor left */
                 fbputchar("_", cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-                fbputchar(charAfter, cursorVerticalPosition, cursorHorizontalPosition+1); /* Restore the previous character to the right */
+
                 printf("Left arrow pressed, cursor at (%d, %d)\n", cursorHorizontalPosition, cursorVerticalPosition);
-                printf("Previous character: %c\n", charAfter);
-                printf("Current character: %c\n", userArrayInput[rowIndex][cursorHorizontalPosition]);
+                printf("Character after: %c\n", charAfter);
+                printf("Current character to edit: %c\n", userArrayInput[rowIndex][cursorHorizontalPosition]);
             } 
             
         
