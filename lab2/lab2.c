@@ -154,11 +154,6 @@ int main()
       if (userTextInput[0] != '\0') { /* Ignore null character, user hasn't pressed anything. */
 
         if (userTextInput[0] == '\n') { /* Enter key pressed */
-          /* Add message to display */
-          // char display_msg[MAX_MESSAGE_LENGTH];
-          // snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput[0]);
-          // add_message(userArrayInput);
-
           /* Combine both rows to send through socket */
           char combinedMessage[BUFFER_SIZE]; // Extra space for newline or null terminator
           snprintf(combinedMessage, sizeof(combinedMessage), "%s%s", userArrayInput[0], userArrayInput[1]);
@@ -173,13 +168,6 @@ int main()
           memset(userArrayInput[0], 0, MAX_MESSAGE_LENGTH);
           memset(userArrayInput[1], 0, MAX_MESSAGE_LENGTH);
           combinedMessage[0] = '\0';
-
-          // /* Clear userArrayInput buffer */
-          // for (int rows = 0; rows < 2; rows++) {
-          //   for (int cols = 0; cols < MAX_MESSAGE_LENGTH; cols++) {
-          //     userArrayInput[rows][cols] = '\0';
-          //   }
-          // }
           
           /* Clear input area */
           clear_input();
@@ -258,43 +246,6 @@ int main()
 
 }
 
-// void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
-//   pthread_mutex_lock(&message_mutex);
-
-//   /* Shift all messages up by two positions to make room for new message */
-//   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
-//     strcpy(message_buffer[i], message_buffer[i + 2]);
-//   }
-  
-//   /* Add new message to buffer (two lines) */
-//   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
-//   message_buffer[MAX_MESSAGES - 2][MAX_MESSAGE_LENGTH - 1] = '\0';
-  
-//   strncpy(message_buffer[MAX_MESSAGES - 1], message[1], MAX_MESSAGE_LENGTH - 1);
-//   message_buffer[MAX_MESSAGES - 1][MAX_MESSAGE_LENGTH - 1] = '\0';
-  
-//   /* Clear the display area */
-//   clear_display();
-  
-//   /* Display all messages in the buffer with text wrapping */
-//   for (int i = 0; i < MAX_MESSAGES; i++) {
-//         int row = i + 1; /* +1 to skip the top border row */
-//     if (row < separator_row) { /* Only display if row is above the separator */
-//       int col = 0;
-//       for (int j = 0; j < strlen(message_buffer[i]); j++) {
-//         if (col >= total_cols) { /* Wrap to the next row if the column limit is reached */
-//           row++;
-//           col = 0;
-//         }
-//         if (row >= separator_row) break; /* Stop if we exceed the display area */
-//         fbputchar(message_buffer[i][j], row, col++);
-//       }
-//     }
-//   }
-  
-//   pthread_mutex_unlock(&message_mutex);
-// }
-
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   pthread_mutex_lock(&message_mutex);
 
@@ -302,10 +253,6 @@ void add_message(const char message[2][MAX_MESSAGE_LENGTH]) {
   for (int i = 0; i < MAX_MESSAGES - 2; i++) {
     strcpy(message_buffer[i], message_buffer[i + 2]);
   }
-
-  // /* Clear message buffer area to be filled */
-  // memset(message_buffer[MAX_MESSAGES - 2], 0, MAX_MESSAGE_LENGTH);
-  // memset(message_buffer[MAX_MESSAGES - 1], 0, MAX_MESSAGE_LENGTH);
 
   /* Add new messages to the buffer */
   strncpy(message_buffer[MAX_MESSAGES - 2], message[0], MAX_MESSAGE_LENGTH - 1);
@@ -361,16 +308,12 @@ void *network_thread_f(void *ignored)
     recvBuf[n] = '\0';
     printf("Received: %s\n", recvBuf);
 
-    /* Check if the message exactly filled our buffer (minus one for null terminator)
-       This likely means there's more data to be read */
-    if (n == BUFFER_SIZE - 1) {
-      printf("Message exceeded buffer size, discarding excess data...\n");
-      
+    if (n == BUFFER_SIZE - 1) { /* Check if the message exactly filled the buffer */
       /* Discard any remaining data in this message */
       char discardBuf[BUFFER_SIZE];
       int discard_n;
       
-      /* Use MSG_DONTWAIT to read non-blockingly until we've cleared the buffer */
+      /* Use MSG_DONTWAIT to read non-blockingly until buffer is cleared */
       while ((discard_n = recv(sockfd, discardBuf, BUFFER_SIZE - 1, MSG_DONTWAIT)) > 0) {
         printf("Discarded %d additional bytes\n", discard_n);
       }
@@ -409,61 +352,3 @@ void *network_thread_f(void *ignored)
   
   return NULL;
 }
-
-// void *network_thread_f(void *ignored)
-// {
-//   char recvBuf[BUFFER_SIZE];
-//   int n;
-
-//   while ((n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0) {
-//     recvBuf[n] = '\0';
-//     printf("%s", recvBuf);
-//     printf("\n");
-
-//     /* If data remains in the socket buffer, discard it */
-//     if (n == BUFFER_SIZE - 1) {
-//       char discardBuf[BUFFER_SIZE];
-//       while (read(sockfd, discardBuf, BUFFER_SIZE) == BUFFER_SIZE) {
-//         ;
-//       }
-//     }
-
-//     char display_msg[2][MAX_MESSAGE_LENGTH]; /* Buffer for message going to be displayed */
-
-//     // /* Clear display message buffer*/
-//     // memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
-//     // memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
-
-//     strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
-//     display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
-
-//     strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH - 1, MAX_MESSAGE_LENGTH - 1);
-//     display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
-
-//     /* Display message */
-//     add_message(display_msg);
-
-//     // /* Clear display message buffer*/
-//     // memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
-//     // memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
-
-//     printf("\n\nAfter adding msg: \n");
-//     printf("display_msg[0]: ");
-//     for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
-//       if (display_msg[0][col] == '\0') printf("0");
-//       printf("%c", display_msg[0][col]);
-//     }
-//     printf("\n");
-
-//     printf("display_msg[1]: ");
-//     for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
-//       if (display_msg[1][col] == '\0') printf("0");
-//       printf("%c", display_msg[1][col]);
-//     }
-//     printf("\n\n\n");
-
-//   }
-  
-//   return NULL;
-
-// }
