@@ -245,6 +245,7 @@ int main()
             userArrayInput[rowIndex][cursorHorizontalPosition + 1] = '\0'; // Ensure null-termination
             printf("userArrayInput[0]: %s\n", userArrayInput[0]);
             printf("userArrayInput[1]: %s\n", userArrayInput[1]);
+            printf("pos: (%d, %d)", cursorVerticalPosition, cursorHorizontalPosition);
           }
 
           /* Display character on screen */
