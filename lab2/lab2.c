@@ -312,7 +312,8 @@ void clear_input(void) {
   }
 }
 
-void *network_thread_f(void *ignored) {
+void *network_thread_f(void *ignored)
+{
   char recvBuf[BUFFER_SIZE];
   int n;
 
