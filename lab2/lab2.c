@@ -158,8 +158,9 @@ int main()
           // add_message(userArrayInput);
 
           /* Combine both rows to send through socket */
-          char combinedMessage[MAX_MESSAGE_LENGTH * 2 + 2]; // Extra space for newline or null terminator
+          char combinedMessage[BUFFER_SIZE]; // Extra space for newline or null terminator
           snprintf(combinedMessage, sizeof(combinedMessage), "%s%s", userArrayInput[0], userArrayInput[1]);
+          printf("%s", combinedMessage);
           
           /* Send message to server*/
           write(sockfd, combinedMessage, strlen(combinedMessage));
@@ -246,6 +247,7 @@ int main()
             /* Text wrapping logic */
             if (cursorHorizontalPosition >= total_cols) {
               if (cursorVerticalPosition < separator_row + 2) { /* Ensure within input rows */
+                userArrayInput[cursorVerticalPosition][cursorHorizontalPosition] = '\0';
                 cursorHorizontalPosition = 0;
                 cursorVerticalPosition++;
                 fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
