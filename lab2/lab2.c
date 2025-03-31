@@ -158,15 +158,14 @@ int main()
       char *userTextInput = keystateToASCII(keystate);
       if (userTextInput[0] != '\0') { /* Ignore null character, user hasn't pressed anything. */
 
-        /* Remove the text prompt and start with cursor at beginning of input line */
-        cursorHorizontalPosition = 0;
-        cursorVerticalPosition = separator_row + 1;
-        fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
-
-        /* When adding a character: */
         if (userTextInput[0] == '\n') { /* Enter key pressed */
+          /* Add message to display */
+          // char display_msg[MAX_MESSAGE_LENGTH];
+          // snprintf(display_msg, MAX_MESSAGE_LENGTH, "You: %s", userArrayInput[0]);
+          // add_message(userArrayInput);
+
           /* Combine both rows to send through socket */
-          char combinedMessage[BUFFER_SIZE];
+          char combinedMessage[BUFFER_SIZE]; // Extra space for newline or null terminator
           snprintf(combinedMessage, sizeof(combinedMessage), "%s%s", userArrayInput[0], userArrayInput[1]);
           printf("userArrayInput[0]: %s\n", userArrayInput[0]);
           printf("userArrayInput[1]: %s\n", userArrayInput[1]);
@@ -193,25 +192,26 @@ int main()
           cursorHorizontalPosition = 0;
           cursorVerticalPosition = separator_row + 1;
           
-          /* Display cursor at beginning of line */
-          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+          /* Display prompt and set cursor after*/
+          fbputs("Enter text: ", cursorVerticalPosition, 0); 
+          cursorHorizontalPosition = strlen("Enter text: ");
 
         } else if (userTextInput[0] == '\b') { /* Backspace key pressed */
-          if (cursorHorizontalPosition > 0) {
+          if (cursorHorizontalPosition > strlen("Enter text: ")) {
             cursorHorizontalPosition--;
-            userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = '\0';
+            userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition - strlen("Enter text: ")] = '\0'; /* Null terminate the string */
             fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); /* Clear character on screen */
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
           }
           
         } else if (userTextInput[0] == '<') { /* Left arrow key pressed */
-          if (cursorHorizontalPosition > 0) {
+          if (cursorHorizontalPosition > strlen("Enter text: ")) {
             cursorHorizontalPosition--;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
           }
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
-          if (cursorHorizontalPosition < strlen(userArrayInput[cursorVerticalPosition - (separator_row + 1)])) {
+          if (cursorHorizontalPosition < strlen("Enter text: ") + strlen(userArrayInput[0])) {
             cursorHorizontalPosition++;
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
           }
@@ -223,9 +223,28 @@ int main()
           continue;
 
         } else {
+          // /* Add character to array */
+          // userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition] = userTextInput[0];
+          
+          // /* Display character on screen */
+          // fbputchar(userTextInput[0], cursorVerticalPosition, cursorHorizontalPosition);
+          // cursorHorizontalPosition++;
+
+          // /* Ensure cursor is displayed after the character */
+          // fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+
+          // /* Text wrapping logic */
+          // if (cursorHorizontalPosition >= total_cols) { /* Check if the current row is full */
+          //   if (cursorVerticalPosition < total_rows - 1) { /* Ensure we don't exceed the input area */
+          //     cursorHorizontalPosition = 0; /* Reset column position after prompt */
+          //     cursorVerticalPosition++; /* Move to the next row */
+          //     fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
+          //   }
+          // }
+
           /* Add character to array */
           int rowIndex = cursorVerticalPosition - (separator_row + 1);
-          int colIndex = cursorHorizontalPosition;
+          int colIndex = cursorHorizontalPosition - strlen("Enter text: ");
 
           if (rowIndex >= 0 && rowIndex < 2 && colIndex >= 0 && colIndex < MAX_MESSAGE_LENGTH - 1) {
             userArrayInput[rowIndex][colIndex] = userTextInput[0];
