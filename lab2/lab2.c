@@ -191,16 +191,12 @@ int main()
             char charAfter;
 
             // Null character at first row, first line
-            /* 
+            
             if ((rowIndex == 0) && (userArrayInput[rowIndex][cursorHorizontalPosition] == '\0')) {
               fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition); // Clear the character at the cursor position
-              continue;
             // Start of first row with character
             } else 
-            */
-
-           // only null character at the end of the second row, shouold go left, all others should not do anything
-
+            
             if (rowIndex == 0 && cursorHorizontalPosition == 0) {
               // Do nothing, already at the start of the first row
               continue;
@@ -208,9 +204,12 @@ int main()
               // Move to the last character of the first row
               cursorVerticalPosition--; // Move to the first row
               charAfter = userArrayInput[1][0];
+              if (charAfter == '\0') {
+                cursorHorizontalPosition = [MAX_MESSAGE_LENGTH - 2]; // Move to the last character of the first row, but not the null terminator
+              } else {
+                cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 1; // Move to the last character of the first row, but not the null terminator
+              }
 
-            // MINUS 2 OR MINUS 1 FOR MAX_MESSAGE_LENGTH
-              cursorHorizontalPosition = MAX_MESSAGE_LENGTH - 1; // Move to the last character of the first row, but not the null terminator
               fbputchar(charAfter, 1, 0); /* Restore the previous character on the second row, first column */
               fbputchar("_", 0, cursorHorizontalPosition+1); /* Place cursor on the 63rd index of display, but dont actually change the value of it in user array*/
               printf("Left arrow pressed, shift row, cursor at (%d, %d)\n", cursorHorizontalPosition, cursorVerticalPosition);
