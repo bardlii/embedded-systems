@@ -54,7 +54,6 @@ pthread_mutex_t message_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* Function prototypes */
 void add_message(const char message[2][MAX_MESSAGE_LENGTH]);
-// void display_messages();
 void clear_display();
 void clear_input();
 
@@ -379,6 +378,10 @@ void *network_thread_f(void *ignored)
 
     char display_msg[2][MAX_MESSAGE_LENGTH]; /* Buffer for message going to be displayed */
 
+    /* Clear display message buffer*/
+    memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
+    memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
+
     strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
     display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
 
@@ -390,6 +393,7 @@ void *network_thread_f(void *ignored)
     // strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
     // display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
 
+    printf("\n\nBefore adding msg: \n");
     printf("display_msg[0]: ");
     for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
       if (display_msg[0][col] == '\0') printf("0");
@@ -424,7 +428,7 @@ void *network_thread_f(void *ignored)
       if (display_msg[1][col] == '\0') printf("0");
       printf("%c", display_msg[1][col]);
     }
-    printf("\n\n");
+    printf("\n\n\n");
 
   }
   
