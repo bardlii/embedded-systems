@@ -353,6 +353,7 @@ void *network_thread_f(void *ignored)
 {
   char recvBuf[BUFFER_SIZE];
   int n;
+  char display_msg[2][MAX_MESSAGE_LENGTH];
 
   /* Receive data */
   // while ( (n = read(sockfd, &recvBuf, BUFFER_SIZE - 1)) > 0 ) {
@@ -373,22 +374,16 @@ void *network_thread_f(void *ignored)
     printf("%s", recvBuf);
     printf("\n");
 
-    char display_msg[2][MAX_MESSAGE_LENGTH];
+    strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
+    display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
 
-    // Ensure the buffer is large enough to extract two messages
-    if (n >= MAX_MESSAGE_LENGTH * 2) {
-      strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
-      display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
-
-      strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH - 1);
-      display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
-    } else {
-      // Handle case where the data is incomplete or malformed
-      strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
-      display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
-      strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
-      display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
-    }
+    strncpy(display_msg[1], recvBuf + MAX_MESSAGE_LENGTH, MAX_MESSAGE_LENGTH - 1);
+    display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
+    // // Handle case where the data is incomplete or malformed
+    // strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
+    // display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
+    // strncpy(display_msg[1], " ", MAX_MESSAGE_LENGTH - 1);
+    // display_msg[1][MAX_MESSAGE_LENGTH - 1] = '\0';
 
     printf("display_msg[0]: ");
     for (int col = 0; col <= MAX_MESSAGE_LENGTH; col++) {
