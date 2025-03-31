@@ -401,16 +401,12 @@ void *network_thread_f(void *ignored)
 
     /* Display message */
     add_message(display_msg);
-
-    /* Clear display message buffer*/
-    memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
-    memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
   }
-
+  
+  /* Clear display message buffer*/
+  memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
+  memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
 
   return NULL;
-
-
-
 }
 
