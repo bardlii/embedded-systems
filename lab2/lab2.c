@@ -204,13 +204,13 @@ int main()
 
         } else if (userTextInput[0] == '>') { /* Right arrow key pressed */
           // Check that we are not at the last column and that the next character is present.
-          if (cursorHorizontalPosition < total_cols - 1 && userArrayInput[inputRow][cursorHorizontalPosition + 1] != '\0') {
-          // Restore the original character at the current cursor position, in case the cursor indicator was drawn
-          fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
-          // Move the cursor one position to the right
-          cursorHorizontalPosition++;
-          // Draw the cursor indicator at the new position
-          fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
+          if (cursorHorizontalPosition < total_cols - 1 && userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition + 1] != '\0') {
+            // Restore the original character at the current cursor position, in case the cursor indicator was drawn
+            fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition);
+            // Move the cursor one position to the right
+            cursorHorizontalPosition++;
+            // Draw the cursor indicator at the new position
+            fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition);
           } else {
             continue; // Ignore if at the end of the line
           }
