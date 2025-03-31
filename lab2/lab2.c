@@ -196,7 +196,6 @@ int main()
           if (cursorHorizontalPosition > 0) { 
             fbputchar(userArrayInput[cursorVerticalPosition - (separator_row + 1)][cursorHorizontalPosition], cursorVerticalPosition, cursorHorizontalPosition); //Restore previous characters
             cursorHorizontalPosition--;
-            fbputchar(' ', cursorVerticalPosition, cursorHorizontalPosition);
             fbputchar('|', cursorVerticalPosition, cursorHorizontalPosition); /* Place cursor */
           } else {
             continue;
