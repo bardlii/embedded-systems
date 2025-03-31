@@ -254,7 +254,7 @@ int main()
 
             printf("userArrayInput[1]: ");
             for (int col = 0; col < MAX_MESSAGE_LENGTH; col++) {
-              if (userArrayInput[0][col] == '\0') printf("0");
+              if (userArrayInput[1][col] == '\0') printf("0");
               printf("%c", userArrayInput[1][col]);
             }
             printf("\n");
