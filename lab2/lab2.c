@@ -427,11 +427,19 @@ void *network_thread_f(void *ignored)
     printf("%s", recvBuf);
     printf("\n");
 
+    /* If data remains in the socket buffer, discard it */
+    if (n == BUFFER_SIZE - 1) {
+      char discardBuf[BUFFER_SIZE];
+      while (read(sockfd, discardBuf, BUFFER_SIZE) == BUFFER_SIZE) {
+        ;
+      }
+    }
+
     char display_msg[2][MAX_MESSAGE_LENGTH]; /* Buffer for message going to be displayed */
 
-    /* Clear display message buffer*/
-    memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
-    memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
+    // /* Clear display message buffer*/
+    // memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
+    // memset(display_msg[1], 0, MAX_MESSAGE_LENGTH);
 
     strncpy(display_msg[0], recvBuf, MAX_MESSAGE_LENGTH - 1);
     display_msg[0][MAX_MESSAGE_LENGTH - 1] = '\0';
@@ -441,14 +449,6 @@ void *network_thread_f(void *ignored)
 
     /* Display message */
     add_message(display_msg);
-
-    /* If data remains in the socket buffer, discard it */
-    if (n == BUFFER_SIZE - 1) {
-      char discardBuf[BUFFER_SIZE];
-      while (read(sockfd, discardBuf, BUFFER_SIZE) == BUFFER_SIZE) {
-        ;
-      }
-    }
 
     // /* Clear display message buffer*/
     // memset(display_msg[0], 0, MAX_MESSAGE_LENGTH);
